@@ -19,16 +19,22 @@ Requires the backend running at `http://localhost:8000` (see `../localyze-be/REA
 NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
 ```
 
-## Routes
+## Routes (v2 — auth + analytical dashboard)
 
 ```
-/                       → redirect to /app (landing page built separately)
-/app                    → Analyze: map + search + ScorePanel
+/                       → Landing page (interactive, works without backend)
+/register  /login       → Auth (split layout; "Masuk sebagai akun demo" button)
+/app                    → Dashboard: 6 KPI cards + map + score breakdown + grid
 /app/discovery          → Location Discovery: score heatmap + top-10
 /app/compare?ids=a,b,c  → side-by-side comparison
-/app/history            → saved analyses (inline rename, delete, open, compare)
+/app/history            → saved analyses (search, verdict filter, inline rename)
 /app/settings/outlets   → CSV outlet import + map layer toggle
 ```
+
+`/app/*` is auth-guarded (redirects to `/login?next=…`). The token is stored in
+Zustand + localStorage and sent as `Authorization: Bearer` on every request; a 401
+clears it and bounces to login. Demo account: `demo@localyze.id` / `demo1234`
+(pre-seeded with a prime + an avoid analysis and 3 outlets).
 
 ## Stack
 
