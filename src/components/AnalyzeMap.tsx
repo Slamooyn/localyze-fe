@@ -51,8 +51,7 @@ export function AnalyzeMap({
         center: [target.lng, target.lat],
         duration: 700,
         zoom: 14,
-        // keep the pin visible in the area not covered by the right-side panel
-        padding: { top: 0, bottom: 0, left: 0, right: 420 },
+        padding: 40,
       });
     }
   };

@@ -2,6 +2,19 @@
 
 export type Verdict = "prime" | "strong" | "conditional" | "avoid";
 
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+}
+export interface AuthResponse {
+  token: string;
+  user: AuthUser;
+}
+export interface MeResponse extends AuthUser {
+  created_at: string;
+}
+
 export interface LatLng {
   lat: number;
   lng: number;

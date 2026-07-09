@@ -20,6 +20,10 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.auth-input {
+  @apply w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand/20;
+}
+
 /* MapLibre popups/controls tweaks */
 .maplibregl-ctrl-attrib {
   font-size: 10px;

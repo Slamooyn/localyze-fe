@@ -1,13 +1,16 @@
+import { useAppStore } from "@/lib/store";
 import type {
   Analysis,
   AnalysisSummary,
   AnalyzeRequest,
+  AuthResponse,
   Category,
   CompareResponse,
   Demographics,
   DiscoveryResponse,
   GeocodeResult,
   GeoJSONFC,
+  MeResponse,
   OutletImportReport,
   Region,
 } from "./types";
@@ -25,12 +28,14 @@ export class ApiError extends Error {
 }
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = useAppStore.getState().token;
   const res = await fetch(`${BASE}${path}`, {
     ...init,
     headers: {
       ...(init?.body && !(init.body instanceof FormData)
         ? { "Content-Type": "application/json" }
         : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...init?.headers,
     },
   });
@@ -49,6 +54,12 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
     } catch {
       /* ignore */
     }
+    // 401 on a protected call → session expired: clear + bounce to login.
+    if (res.status === 401 && typeof window !== "undefined" && !path.startsWith("/auth")) {
+      useAppStore.getState().logout();
+      const next = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = `/login?next=${next}`;
+    }
     throw new ApiError(res.status, code, message);
   }
   if (res.status === 204) return undefined as T;
@@ -56,6 +67,18 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  register: (name: string, email: string, password: string) =>
+    req<AuthResponse>("/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ name, email, password }),
+    }),
+  login: (email: string, password: string) =>
+    req<AuthResponse>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    }),
+  me: () => req<MeResponse>("/auth/me"),
+
   categories: () => req<Category[]>("/categories"),
   regions: (level?: string) =>
     req<Region[]>(`/regions${level ? `?level=${level}` : ""}`),

@@ -1,159 +1,138 @@
-# Localyze — Frontend MVP Feature Spec
+# Localyze — Frontend MVP Feature Spec (v2 — Analytical Dashboard)
 
-> **Status:** MVP spec · **Created:** 2026-07-08 · **Owner:** Moym
-> **Stack:** Next.js 14 (App Router) · Tailwind CSS · **MapLibre GL JS** + OSM tiles (gratis, tanpa token — ideal untuk local dev) · Zustand (state) · TanStack Query (data fetching)
-> **Backend:** `http://localhost:8000/api/v1` — kontrak lengkap di `localyze-be/markdowns/api-contract.md`
-
----
-
-## 1. Positioning & Prinsip Desain
-
-Localyze adalah executive tool: user-nya expansion manager yang butuh keputusan, bukan data mentah. Setiap layar menjawab satu pertanyaan bisnis.
-
-1. **Verdict first, angka kedua.** Band (`prime/strong/conditional/avoid`) selalu lebih menonjol daripada skor numerik. Skor 72 vs 74 itu noise — jangan dorong user membandingkan desimal.
-2. **Setiap angka bisa di-drill-down.** Skor tanpa `evidence` tidak boleh tampil. Field `evidence` dari API sudah berbentuk kalimat siap render.
-3. **Peta adalah kanvas utama.** Semua alur dimulai dan berakhir di peta; panel analisis melayang di atasnya, bukan halaman terpisah.
-4. **Jujur soal data.** `is_modeled: true` → badge "modeled"; `confidence < 0.7` → banner peringatan. Kredibilitas adalah fitur.
-5. **Komparatif secara default.** Keputusan ekspansi selalu "Tebet atau BSD?", bukan "Tebet ya/tidak?".
+> **Status:** MVP spec v2 · **Updated:** 2026-07-09 · **Owner:** Moym
+> **Perubahan besar dari v1:** (1) layout app berubah dari "peta full-screen + panel melayang" menjadi **analytical dashboard profesional** (sidebar + KPI cards + card grid), (2) ada **auth**: user harus register/login sebelum masuk dashboard, (3) logo resmi: `src/app/image copy.png`.
+> **Stack:** Next.js 14 (App Router) · Tailwind CSS · MapLibre GL JS + OSM (tanpa token) · Zustand · TanStack Query · Framer Motion
+> **Backend:** `http://localhost:8000/api/v1` — kontrak di `localyze-be/markdowns/api-contract.md` (termasuk auth)
 
 ---
 
-## 2. Design Tokens
+## 1. Alur User (end-to-end)
 
 ```
-Verdict colors (satu-satunya pemakaian warna semantik besar):
-  prime        #16A34A (green-600)   bg: green-50
-  strong       #0D9488 (teal-600)    bg: teal-50
-  conditional  #D97706 (amber-600)   bg: amber-50
-  avoid        #DC2626 (red-600)     bg: red-50
-
-Brand:
-  primary      #1D4ED8 (blue-700)  — dari logo Localyze (pin biru)
-  primary-dark #172554 (blue-950)  — navy logo
-
-Logo asset (disediakan Moym, WAJIB ada sebelum M1 FE):
-  public/logo-localyze.png   — logo utama (pin L + titik), dipakai TopBar & landing navbar
-  favicon                    — digenerate dari file yang sama (crop square)
-  Catatan: background logo putih — untuk TopBar/navbar terang pakai langsung;
-  untuk hero navy landing, minta versi transparan atau beri container putih rounded.
-
-Peta:
-  competitor pin   merah, ukuran ∝ decay_weight
-  anchor pin       biru, ikon per anchor_type (office/mall/campus/station/school/hospital)
-  user outlet pin  navy dengan ring
-  radius rings     1km solid 60%, 2km dashed 40%, 5km dashed 20%
-  heatmap          ramp green→amber→red mengikuti skor (invert: skor tinggi = green)
-
-Typography: Inter · angka skor pakai tabular-nums.
+Landing (/)  →  klik "Coba demo"  →  /register (atau /login jika sudah punya akun)
+             →  sukses auth  →  /app (analytical dashboard, auto-run analisis demo Tebet)
 ```
 
----
+- Semua route `/app/*` dilindungi route guard: tanpa token → redirect `/login?next=…`.
+- Tombol **"Masuk sebagai akun demo"** di halaman login (kredensial seed `demo@localyze.id` / `demo1234`) — supaya reviewer portfolio bisa masuk tanpa registrasi.
 
-## 3. Struktur Halaman
+## 2. Prinsip Desain
+
+Referensi visual: dashboard SaaS analitik modern (sidebar navy gelap + konten terang, KPI stat cards berjajar, chart cards dalam grid — gaya COMBEN/enterprise dashboard).
+
+1. **Verdict first, angka kedua.** Band verdict selalu lebih menonjol dari skor numerik.
+2. **Setiap angka bisa di-drill-down** — field `evidence` dari API dirender apa adanya.
+3. **Dashboard-first, peta sebagai card utama** (bukan full-screen). Peta tetap interaksi primer, tapi hidup di dalam grid bersama KPI dan breakdown.
+4. **Jujur soal data.** Badge "modeled", banner confidence rendah, tanggal snapshot selalu tampil.
+5. **Komparatif secara default.**
+
+## 3. Design Tokens
 
 ```
-/                        → Landing page marketing (SSG)     ← spec terpisah: landing-page-spec.md
-/app                     → Analyze (peta full-screen + panel)   ← layar utama
-/app/discovery           → Location Discovery (grid heatmap + ranked list)
-/app/compare?ids=a,b,c   → Comparison view
-/app/history             → Riwayat analisis tersimpan
-/app/settings/outlets    → Import & kelola outlet sendiri (CSV)
+Brand (dari logo image copy.png — pin biru gradasi + navy):
+  primary        #1D4ED8 (blue-700)
+  primary-bright #2563EB
+  navy           #0B1B3B → #172554 (sidebar & auth panel; satu-satunya gradasi diizinkan)
+  accent-cyan    #22D3EE (highlight kecil, active nav indicator)
+
+Verdict colors:
+  prime #16A34A · strong #0D9488 · conditional #D97706 · avoid #DC2626
+  (masing-masing dengan bg -50 untuk badge/card tint)
+
+Surface app: bg konten #F8FAFC (slate-50), card putih rounded-2xl shadow-sm border slate-200/60
+Sidebar: navy, teks slate-300, item aktif: bg white/10 + indikator kiri accent-cyan, ikon lucide
+Typography: Inter · headline semibold tracking-tight · skor tabular-nums
+Delta chip: hijau ↑ / merah ↓ (gaya KPI card enterprise)
+
+Logo asset:
+  Sumber: src/app/image copy.png (disediakan Moym)
+  → salin/rename ke public/logo-localyze.png — SEMUA pemakaian logo merujuk file ini
+    (sidebar, halaman auth, landing navbar, favicon, OG image)
+  Background logo putih → di sidebar navy beri container putih rounded-xl padding kecil.
 ```
 
-Topbar persisten (hanya di `/app/*`): logo, nav 4 item, category switcher global (dropdown kategori franchise — mengubah konteks semua halaman). Landing (`/`) punya layout & navbar sendiri.
+## 4. Struktur Route
 
----
+```
+/                        → Landing (SSG)                    ← landing-page-spec.md
+/register  /login        → Auth pages (layout sendiri)
+/app                     → Dashboard Analisis (layar utama)
+/app/discovery           → Location Discovery
+/app/compare?ids=…       → Comparison
+/app/history             → Riwayat
+/app/settings/outlets    → Outlet & CSV import
+```
 
-## 4. Layar 1 — Analyze (`/app`)
+## 5. App Shell (semua `/app/*`)
+
+- **Sidebar kiri** (260px, collapsible → 72px ikon-only, persist localStorage): logo + wordmark "Localyze" di atas; nav: Dashboard, Discovery, Compare, History, Outlets, (divider), Settings; badge count kecil di Compare saat tray terisi; tombol collapse di bawah.
+- **Topbar** (sticky, bg white, border-b): global search lokasi (persis `GET /geocode`, shortcut ⌘K, hasil dropdown → pilih = pindah ke `/app` + analyze); **CategorySwitcher** (dropdown kategori franchise, konteks global); chip coverage "Jakarta Selatan"; bell notifikasi (placeholder, dot saja); avatar + nama user (dari `GET /auth/me`) → menu: Settings, Logout.
+- **Page header** per halaman: judul besar + subtitle satu kalimat (pola "Dashboard Agent Lifecycle / ringkasan…").
+
+## 6. Layar 1 — Dashboard Analisis (`/app`)
 
 **Pertanyaan bisnis:** "Lokasi X layak atau tidak untuk kategori saya?"
 
-### Layout
-Peta full-viewport. Search bar mengambang kiri-atas. Setelah analisis: `ScorePanel` slide-in dari kanan (420 px, collapsible).
-
-### Flow utama (happy path)
-1. User pilih kategori di topbar (default: kategori terakhir, persist di localStorage).
-2. Ketik di search bar → `GET /geocode` (debounce 300 ms) → pilih hasil, ATAU klik langsung di peta → `GET /reverse-geocode`.
-3. Pin target jatuh + radius rings render → `POST /analyses` otomatis → skeleton di panel (<1 dtk target).
-4. Bersamaan: `GET /places` (competitor + anchor) → pin overlay dalam radius.
-5. `ScorePanel` terisi. User bisa drag pin → re-analyze otomatis (debounce 500 ms).
-
-### Komponen `ScorePanel` (atas → bawah)
-1. **VerdictHeader** — badge verdict besar + skor komposit + confidence chip. Jika `confidence < 0.7`: banner amber "Data terbatas di area ini".
-2. **ScoreDial** — donut 0–100 dengan segmen band berwarna.
-3. **PillarBars** — dua bar (Demand / Competition) dengan bobot pilar tertera; cannibalization penalty tampil sebagai strip merah pengurang jika > 0.
-4. **FactorBreakdown** — daftar faktor dari `breakdown.*.factors`: label, contribution badge (`+12.9` hijau / `−10.4` merah), expand → `evidence` + `raw_value` + persentil bar. Faktor `is_modeled` diberi badge "modeled".
-5. **CompetitorList** — dari `breakdown.competition.competitors_in_radius`, sorted by distance; hover item ↔ highlight pin di peta (sinkron dua arah).
-6. **CannibalizationCard** — hanya render jika `penalty > 0`: outlet terdampak + `overlap_pct`.
-7. **ActionBar** — "Simpan" (PATCH name), "Bandingkan" (tambah ke compare tray), "Analisis ulang radius…" (pilihan 1/2/5 km).
-
-### States
-- **Empty**: ilustrasi + copy "Cari lokasi atau klik peta untuk mulai" + 3 chip contoh lokasi (deep-link demo).
-- **Loading**: skeleton panel, pin pulse.
-- **OUT_OF_COVERAGE (422)**: toast + polygon coverage di-highlight di peta.
-- **Error**: retry inline, jangan kosongkan panel yang sudah terisi.
-
----
-
-## 5. Layar 2 — Location Discovery (`/app/discovery`)
-
-**Pertanyaan bisnis:** "Di mana saya harus buka outlet berikutnya?" — fitur pamungkas demo.
-
-### Layout
-Peta 65% kiri + panel ranked list 35% kanan.
+### Layout (atas → bawah)
+1. **Page header**: "Dashboard Analisis Lokasi" + subtitle + tombol kanan: "Simpan analisis" & "+ Bandingkan".
+2. **KPI stat cards row** (6 card, ikon berwarna soft-bg di kiri — gaya stat card enterprise):
+   | Card | Isi | Catatan |
+   |---|---|---|
+   | Localyze Score | angka besar + delta vs rata-rata kota | ikon gauge |
+   | Verdict | badge besar prime/strong/conditional/avoid | warna verdict |
+   | Kompetitor dalam radius | count + "X efektif (decay)" | ikon store |
+   | Kepadatan penduduk | jiwa/km² + persentil chip | ikon users |
+   | Confidence | % + label (Tinggi/Sedang/Rendah) | <70% → amber |
+   | Kanibalisasi | −X poin / "Tidak ada" | hanya merah jika >0 |
+3. **Grid utama** (12 kolom):
+   - **Card Peta** (col-span-7, tinggi ~520px): MapLibre — pin target draggable, radius rings 1/2/5km, pin kompetitor (ukuran ∝ bobot decay), pin anchor (ikon per tipe), pin outlet sendiri (toggle). Header card: judul + segmented control radius (1/2/5 km) + toggle layer. Klik peta = pindah titik analisis (re-run, debounce 500ms).
+   - **Card Score Breakdown** (col-span-5): ScoreDial (donut 0–100 segmen band) + PillarBars (Demand/Competition + bobot) + strip merah penalty jika ada + **FactorBreakdown**: baris faktor dengan contribution badge (+12.9 / −10.4), expand → evidence + raw value + percentile bar; badge "modeled" bila perlu.
+4. **Grid bawah** (3 card):
+   - **CompetitorList** — tabel: nama, brand, chain badge, jarak, bobot decay; hover row ↔ highlight pin (dua arah); sort by jarak.
+   - **Demographic Profile** — dari `GET /regions/{id}/demographics`: bar usia horizontal, kepadatan, purchasing power (+ badge modeled), sumber & tahun data.
+   - **Phase 2 Teaser** — 3 item locked (Disaster risk, Economic lifecycle, Foot traffic) dengan ikon gembok, tooltip "Segera hadir".
 
 ### Flow
-1. Pilih kategori (topbar) + kecamatan (`GET /regions?level=district`) → `GET /discovery`.
-2. Heatmap render (circle layer, warna = skor) + Top-10 list di panel: rank, nama area, skor, verdict badge.
-3. Hover list item ↔ highlight sel di peta (dua arah).
-4. Klik item/sel → navigasi ke `/app` dengan koordinat centroid → auto-run analisis penuh (via query param `?lat&lng&analyze=1`).
-5. Footer panel: "Skor grid dihitung 2026-07-01" (dari `computed_at`) — kejujuran snapshot.
+1. Masuk `/app` pertama kali (atau dengan `?lat&lng&analyze=1` dari landing/discovery) → auto `POST /analyses` → KPI + cards terisi.
+2. Tanpa query param & tanpa analisis sebelumnya → **empty state**: KPI cards menampilkan "—", card peta menampilkan overlay CTA "Cari lokasi atau klik peta" + 3 chip contoh lokasi.
+3. Ganti kategori di topbar → re-run analisis di titik yang sama.
+4. States: loading = skeleton per card (bukan spinner satu layar); `OUT_OF_COVERAGE` = toast + polygon coverage; error = retry inline per card.
 
----
+## 7. Layar 2 — Location Discovery (`/app/discovery`)
 
-## 6. Layar 3 — Comparison (`/app/compare?ids=…`)
+Header + filter bar (kategori — ikut topbar; dropdown kecamatan dari `GET /regions?level=district`; tombol Terapkan). Grid: **Card peta heatmap** (col-span-8, circle layer warna = skor) + **Card "Top 10 Lokasi"** (col-span-4, ranked list: rank, nama area, skor, verdict badge, tombol "Analisis →"). Hover sync dua arah. Klik → `/app?lat&lng&analyze=1`. Footer card: "Grid dihitung {computed_at}". KPI row kecil di atas: sel dianalisis, skor tertinggi, rata-rata kecamatan, sel verdict prime.
 
-**Pertanyaan bisnis:** "Tebet atau BSD?"
+## 8. Layar 3 — Comparison (`/app/compare?ids=…`)
 
-- **Compare tray**: chip mengambang bawah layar (global) menampung ≤3 analisis; tombol "Bandingkan" aktif saat ≥2.
-- Layout kolom side-by-side (2–3 kolom). Baris: VerdictHeader mini → skor komposit → pilar → tiap faktor.
-- Data dari `GET /analyses/compare` — gunakan `deltas.factor_winners`: nilai terbaik per baris diberi highlight hijau + ikon trofi kecil.
-- Peta mini di atas menampilkan semua pin kandidat sekaligus (fit bounds).
-- Tombol "Jadikan keputusan" → placeholder Phase 2 (export memo PDF) — tampilkan sebagai teaser disabled dengan tooltip.
+CompareTray global (chip bar di bawah, ≤3). Halaman: peta mini semua kandidat (fit bounds) + tabel kolom side-by-side per analisis: verdict, komposit, pilar, tiap faktor — baris pemenang di-highlight hijau (dari `deltas.factor_winners`). Tombol "Export memo" = teaser disabled (Phase 2).
 
----
+## 9. Layar 4 — History (`/app/history`)
 
-## 7. Layar 4 — History (`/app/history`)
+Card tabel: nama (inline edit → PATCH), kategori, verdict badge, skor, tanggal; aksi: buka, bandingkan, hapus. Search & filter verdict. Empty state → CTA ke `/app`.
 
-Tabel sederhana: nama (inline editable → PATCH), kategori, verdict badge, skor, tanggal. Aksi: buka di peta, tambah ke compare tray, hapus. Empty state mengarahkan ke `/app`.
+## 10. Layar 5 — Outlets (`/app/settings/outlets`)
 
----
+Card dropzone CSV (`name,lat,lng,address`) → `POST /outlets/import` → hasil import + tabel skipped rows; card daftar outlet + toggle "Tampilkan di peta" (global, persist); hapus per batch. Copy edukasi kanibalisasi.
 
-## 8. Layar 5 — Outlet Settings (`/app/settings/outlets`)
+## 11. Auth Pages (`/register`, `/login`)
 
-1. Dropzone CSV (`name,lat,lng,address`) → `POST /outlets/import` → hasil: imported count + tabel skipped rows dengan alasan.
-2. Daftar outlet aktif + toggle "Tampilkan outlet saya di peta" (layer global, persist localStorage).
-3. Hapus per batch atau semua.
-4. Copy edukasi singkat: "Outlet kamu dipakai untuk menghitung risiko kanibalisasi antar cabang."
+- **Layout split**: kiri form (max-w-md), kanan panel navy dengan logo + tagline + mock mini ScoreDial (dekoratif, statis). Mobile: form saja.
+- **Register**: nama, email, password (min 8) → `POST /auth/register` → auto-login → redirect `next` atau `/app?lat=-6.2264&lng=106.8531&category=coffee-grab-go&analyze=1` (demo run pertama).
+- **Login**: email + password → `POST /auth/login`; tombol sekunder **"Masuk sebagai akun demo"** (isi kredensial demo otomatis lalu submit).
+- Token JWT disimpan di Zustand + localStorage; axios/fetch interceptor menyisipkan `Authorization: Bearer`. 401 dari API → clear token → redirect `/login`.
+- Validasi inline, error state jelas ("Email sudah terdaftar", "Kredensial salah"). Tanpa lupa-password/verifikasi email (out of scope MVP — tulis di UI footer kecil "Demo build").
 
----
+## 12. Komponen Inventory
 
-## 9. Fitur Phase 2 sebagai Teaser (penting untuk portfolio)
+Shell: `Sidebar` · `SidebarItem` · `Topbar` · `GlobalSearch` · `CategorySwitcher` · `UserMenu` · `PageHeader`
+Dashboard: `KpiCard` · `DeltaChip` · `MapCard` (MapLibre wrapper) · `RadiusControl` · `LayerToggle` · `PinLayer` · `HeatmapLayer` · `ScoreDial` · `PillarBar` · `FactorRow` · `PercentileBar` · `ModeledBadge` · `ConfidenceChip` · `VerdictBadge` · `CompetitorTable` · `DemographicCard` · `TeaserCard` · `CannibalizationCard`
+Lainnya: `CompareTray` · `CompareColumn` · `DiscoveryList` · `CsvDropzone` · `EmptyState` · `SkeletonCard` · `AuthLayout` · `AuthForm`
 
-Di `ScorePanel` bawah, render 3 kartu locked (ikon gembok, opacity 60%): "Disaster risk", "Economic lifecycle", "Foot traffic". Tooltip: "Segera hadir". Menunjukkan visi produk tanpa membangunnya — jangan dihilangkan.
+## 13. Non-Functional
 
----
-
-## 10. Komponen Inventory (ringkas)
-
-`TopBar` · `CategorySwitcher` · `LocationSearch` · `MapCanvas` (MapLibre wrapper) · `RadiusRings` · `PlacePin` / `PinLayer` · `HeatmapLayer` · `ScorePanel` · `VerdictBadge` · `ScoreDial` · `PillarBar` · `FactorRow` · `PercentileBar` · `ModeledBadge` · `ConfidenceChip` · `CompetitorList` · `CannibalizationCard` · `CompareTray` · `CompareColumn` · `DiscoveryList` · `CsvDropzone` · `EmptyState` · `SkeletonPanel`
-
----
-
-## 11. Non-Functional (local dev)
-
-- Target time-to-insight: <1.5 dtk dari klik peta sampai panel terisi (data lokal, harusnya mudah).
-- Responsive: desktop-first (1280+); tablet minimal usable; mobile out of scope MVP.
-- Semua state URL-addressable (`?lat&lng&category`) supaya demo bisa di-deep-link.
+- Time-to-insight <1.5 dtk (data lokal); skeleton per card, tanpa layout shift.
+- Desktop-first 1280+; sidebar collapse membuat 1024 usable; mobile out of scope.
+- State URL-addressable (`?lat&lng&category`) untuk demo deep-link.
 - `.env.local`: `NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1`.
-- Aksesibilitas dasar: verdict tidak hanya warna (selalu ada label teks), focus states, alt text.
+- Aksesibilitas: verdict = warna + teks selalu; focus states; kontras sidebar AA.

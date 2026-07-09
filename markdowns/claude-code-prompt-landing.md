@@ -1,55 +1,62 @@
-# Prompt Claude Code — Localyze Landing Page
+# Prompt Claude Code — Localyze Landing Page (v2)
 
 > Copy-paste prompt di bawah ini ke Claude Code dari root repo `localyze-fe`.
-> **Jalankan SETELAH app selesai (M1–M6 prompt frontend)** — landing me-reuse komponen app (ScoreDial, FactorRow, VerdictBadge) dan design tokens yang sudah ada.
+> **Jalankan SETELAH app selesai (M1–M7 prompt frontend)** — landing me-reuse komponen app (ScoreDial, FactorRow, VerdictBadge, KpiCard) dan design tokens.
 
 ---
 
 ```
-Kamu adalah frontend engineer + motion designer (gunakan skill UIUXProMax) yang membangun
-landing page Localyze. Ini halaman yang menentukan first impression portfolio — kualitas
-harus setara landing page SaaS modern (referensi rasa: Linear, Resend, Vercel), tapi
-dengan identitas Localyze (navy + pin biru dari logo).
+Kamu adalah frontend engineer + motion designer (gunakan skill UIUXProMax) yang
+membangun landing page Localyze. Ini first impression portfolio — kualitas setara
+landing SaaS modern (referensi rasa: Linear, Resend, Vercel), identitas Localyze
+(navy + pin biru dari logo).
 
 ## LANGKAH PERTAMA (WAJIB)
-1. Baca markdowns/landing-page-spec.md sampai selesai — struktur S1-S7, copywriting,
-   dan aturan performa TIDAK boleh diubah tanpa alasan kuat.
-2. Baca markdowns/tech-stack-frontend.md §4 — landing di /, app di /app.
-3. Inventaris komponen app yang akan di-reuse: ScoreDial, FactorRow, VerdictBadge,
-   design tokens Tailwind. Landing HARUS reuse, bukan membuat tiruan.
+1. Baca markdowns/landing-page-spec.md (v2) sampai selesai — struktur S1-S6,
+   copywriting, dan aturan performa TIDAK boleh diubah tanpa alasan kuat.
+2. Inventaris komponen app yang di-reuse: ScoreDial, FactorRow, VerdictBadge,
+   KpiCard, tokens Tailwind. Landing WAJIB reuse, bukan membuat tiruan.
+3. Logo: public/logo-localyze.png (sudah ada dari milestone app; sumber asli
+   src/app/image copy.png). Navbar, footer, OG image pakai file ini.
 
 ## ATURAN KERAS
-- Landing 100% hidup tanpa backend: semua data dari src/landing/sample-locations.json.
-- Framer Motion untuk semua animasi; setiap animasi punya varian reduced-motion.
-- Tanpa Three.js, tanpa video, tanpa library carousel. LCP < 2.5s.
-- Widget berat (MiniMap, WeightPlayground) via next/dynamic ssr:false + placeholder.
-- Copywriting pakai draft di spec §5 (Bahasa Indonesia).
+- Landing 100% hidup tanpa backend: data dari src/landing/sample-locations.json.
+- CTA primer SELALU → /register; tombol "Masuk" → /login. Ganti / redirect
+  sementara (dari milestone app) dengan halaman landing ini.
+- Framer Motion untuk semua animasi; tiap animasi punya varian reduced-motion.
+- Tanpa Three.js, video, carousel lib, KaTeX. LCP < 2.5s. Widget berat
+  (MiniMap, mockup S3, WeightPlayground) via next/dynamic ssr:false + placeholder.
+- Copywriting pakai draft spec §6 (Bahasa Indonesia).
 
 ## URUTAN PENGERJAAN (commit per milestone)
-L1. LandingLayout + LandingNavbar (transparan→solid saat scroll) + Hero S1 versi statis
-    (headline, CTA ke /app deep-link demo, layout dua kolom) + section shells S2-S7
-    dengan copywriting final + CTA final + footer. Halaman sudah utuh & rapi TANPA
-    interaktivitas. Cek responsive mobile.
-L2. Interaktif hero: MiniMap (MapLibre, gestures off, 3 titik kandidat berdenyut,
-    klik → pin + radius rings animasi + ScoreDialMini count-up + verdict badge) +
-    CountUpStat trust strip (trigger saat inview). Data: sample-locations.json.
-L3. Scrollytelling S3 (useScroll, teks sticky kiri, panel kanan 3 fase: pin jatuh →
-    dial terisi + FactorRow muncul berurutan → compare battle) + fallback stepper
-    statis untuk reduced-motion + scroll reveal S2 & S4 (feature cards hover tilt).
-L4. WeightPlayground S5: 3 slider → scoring-mini.ts (port murni formula:
-    composite = wd*demand + wc*compete − penalty, decay exp(-d/τ)) → dial + verdict
-    update real-time. Unit test scoring-mini. Lalu audit akhir: Lighthouse
-    (Performance ≥90, A11y ≥95), keyboard nav, reduced-motion, meta tags OG +
-    favicon dari logo.
+L1. Halaman utuh statis: LandingNavbar (transparan→solid, tombol Masuk + Coba demo)
+    + Hero S1 (headline, CTA → /register, layout 2 kolom, placeholder MiniMap)
+    + S2 What you get (6 BenefitCard, badge Core/Pro insight) + shell S3-S6 dengan
+    copywriting final + FaqAccordion + footer. Rapi & responsive dulu, interaktif belum.
+L2. Hero interaktif: MiniMap (MapLibre, gestures off, 3 titik berdenyut, klik →
+    pin + radius rings + ScoreDialMini count-up + verdict) + CountUpStat trust strip
+    (trigger inview) + hover micro-visual BenefitCard S2.
+L3. S3 Tutorial sneak peek (scrollytelling product tour): teks step sticky kiri,
+    kanan mockup dashboard HIDUP dalam BrowserFrame — 4 fase sesuai spec (pilih
+    kategori & titik → KPI + dial + FactorRow terisi → Discovery heatmap + top-10 →
+    compare battle + verdict stamp). Gunakan komponen app asli dengan data sample.
+    Fallback reduced-motion: stepper 4 tab.
+L4. S4 Metodologi & Rumus: FormulaHero (Score = w_D·Demand + w_C·Competition − P,
+    hover term → tooltip penjelasan) + 3 kartu micro-viz (DecayCurve animasi
+    e^(-d/τ), PercentileHisto, verdict band + confidence) + WeightPlayground
+    (3 slider → scoring-mini.ts pure function → dial + verdict real-time; unit test
+    scoring-mini). Lalu audit akhir: Lighthouse (Perf ≥90, A11y ≥95, SEO ≥95),
+    keyboard nav, reduced-motion, meta OG + favicon.
 
 ## ACCEPTANCE (alur review manual)
-1. Buka / tanpa backend jalan → semua section hidup, tidak ada error console.
-2. Klik titik di MiniMap → pin, ring, count-up skor, verdict — dalam <1 detik.
-3. Scroll S3 pelan → tiga fase bercerita runtut; dengan reduced-motion → stepper.
-4. Geser slider S5 → skor & verdict berubah masuk akal (naikkan bobot kompetisi
-   di lokasi padat → skor turun).
-5. Klik CTA → mendarat di /app dengan analisis Tebet berjalan otomatis.
-6. Lighthouse mobile: Performance ≥ 90, Accessibility ≥ 95.
+1. Backend MATI → buka / → semua section hidup, tanpa error console.
+2. Klik titik MiniMap → pin, ring, count-up, verdict <1 dtk.
+3. Scroll S3 pelan → 4 fase tour runtut; reduced-motion → stepper.
+4. Hover term rumus S4 → tooltip; geser slider → skor & verdict berubah masuk akal
+   (bobot kompetisi naik di lokasi padat → skor turun).
+5. Klik "Coba demo gratis" → /register; setelah daftar → /app auto-analyze Tebet.
+   Klik "Masuk" → /login → akun demo → dashboard terisi.
+6. Lighthouse mobile: Performance ≥ 90, Accessibility ≥ 95, SEO ≥ 95.
 
 Kerjakan L1 sekarang. Setelah tiap milestone: screenshot + ringkasan sebelum lanjut.
 ```

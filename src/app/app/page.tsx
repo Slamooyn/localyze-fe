@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 
-import { AnalyzeView } from "@/components/AnalyzeView";
+import { DashboardView } from "@/components/dashboard/DashboardView";
 
-export default function AnalyzePage() {
+export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="h-full w-full animate-pulse bg-slate-100" />}>
-      <AnalyzeView />
+    <Suspense fallback={<div className="h-full w-full animate-pulse bg-slate-50" />}>
+      <DashboardView />
     </Suspense>
   );
 }

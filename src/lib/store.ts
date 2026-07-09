@@ -3,9 +3,25 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+}
+
 interface AppState {
+  // --- auth ---
+  token: string | null;
+  user: AuthUser | null;
+  setAuth: (token: string, user: AuthUser) => void;
+  logout: () => void;
+
+  // --- app context ---
   categorySlug: string;
   setCategory: (slug: string) => void;
+
+  sidebarCollapsed: boolean;
+  toggleSidebar: () => void;
 
   compareIds: string[];
   addToCompare: (id: string) => void;
@@ -25,8 +41,16 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
+      token: null,
+      user: null,
+      setAuth: (token, user) => set({ token, user }),
+      logout: () => set({ token: null, user: null }),
+
       categorySlug: "coffee-grab-go",
       setCategory: (slug) => set({ categorySlug: slug }),
+
+      sidebarCollapsed: false,
+      toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 
       compareIds: [],
       addToCompare: (id) =>
@@ -51,7 +75,10 @@ export const useAppStore = create<AppState>()(
     {
       name: "localyze-ui",
       partialize: (s) => ({
+        token: s.token,
+        user: s.user,
         categorySlug: s.categorySlug,
+        sidebarCollapsed: s.sidebarCollapsed,
         compareIds: s.compareIds,
         showOutlets: s.showOutlets,
       }),

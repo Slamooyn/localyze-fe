@@ -11,7 +11,9 @@ const config: Config = {
         conditional: { DEFAULT: "#D97706", bg: "#FFFBEB" },
         avoid: { DEFAULT: "#DC2626", bg: "#FEF2F2" },
         // Brand (Localyze pin)
-        brand: { DEFAULT: "#1D4ED8", dark: "#172554" },
+        brand: { DEFAULT: "#1D4ED8", bright: "#2563EB", dark: "#172554" },
+        navy: { DEFAULT: "#0B1B3B", 800: "#172554" },
+        "accent-cyan": "#22D3EE",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
