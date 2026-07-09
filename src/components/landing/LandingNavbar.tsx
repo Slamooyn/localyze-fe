@@ -5,8 +5,6 @@ import { useEffect, useState } from "react";
 
 import { Wordmark } from "@/components/Logo";
 
-const DEMO = "/app?lat=-6.2264&lng=106.8531&category=coffee-grab-go&analyze=1";
-
 export function LandingNavbar() {
   const [solid, setSolid] = useState(false);
   useEffect(() => {
@@ -16,6 +14,10 @@ export function LandingNavbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const linkClass = solid
+    ? "text-slate-600 hover:bg-slate-100"
+    : "text-blue-100 hover:bg-white/10";
+
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
@@ -23,27 +25,26 @@ export function LandingNavbar() {
       }`}
     >
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-        <Wordmark className={solid ? "text-brand-dark" : "text-white [&_span]:text-white"} />
+        <Wordmark onNavy={!solid} />
         <nav className="flex items-center gap-1 text-sm">
-          <a
-            href="#how"
-            className={`hidden rounded-lg px-3 py-1.5 font-medium transition sm:block ${
-              solid ? "text-slate-600 hover:bg-slate-100" : "text-blue-100 hover:bg-white/10"
-            }`}
-          >
+          <a href="#how" className={`hidden rounded-lg px-3 py-1.5 font-medium transition sm:block ${linkClass}`}>
             Cara kerja
           </a>
-          <a
-            href="#features"
-            className={`hidden rounded-lg px-3 py-1.5 font-medium transition sm:block ${
-              solid ? "text-slate-600 hover:bg-slate-100" : "text-blue-100 hover:bg-white/10"
-            }`}
-          >
+          <a href="#features" className={`hidden rounded-lg px-3 py-1.5 font-medium transition sm:block ${linkClass}`}>
             Fitur
           </a>
+          <a href="#method" className={`hidden rounded-lg px-3 py-1.5 font-medium transition sm:block ${linkClass}`}>
+            Metodologi
+          </a>
           <Link
-            href={DEMO}
-            className="rounded-lg bg-brand px-3.5 py-1.5 font-semibold text-white shadow-sm transition hover:bg-blue-600"
+            href="/login"
+            className={`rounded-lg px-3 py-1.5 font-medium transition ${linkClass}`}
+          >
+            Masuk
+          </Link>
+          <Link
+            href="/register"
+            className="rounded-lg bg-brand px-3.5 py-1.5 font-semibold text-white shadow-sm transition hover:bg-brand-bright"
           >
             Coba demo
           </Link>
