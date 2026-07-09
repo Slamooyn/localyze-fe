@@ -1,7 +1,11 @@
+import { Suspense } from "react";
+
+import { CompareView } from "@/components/CompareView";
+
 export default function ComparePage() {
   return (
-    <div className="flex h-full items-center justify-center text-slate-400">
-      Comparison — segera (M5)
-    </div>
+    <Suspense fallback={<div className="h-full w-full animate-pulse bg-slate-100" />}>
+      <CompareView />
+    </Suspense>
   );
 }
