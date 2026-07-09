@@ -1,0 +1,41 @@
+[
+  {
+    "id": "scbd",
+    "name": "SCBD / Senayan",
+    "lat": -6.2246,
+    "lng": 106.8097,
+    "demand": 85,
+    "competitor_distances_m": [400, 600, 900],
+    "factors": [
+      { "key": "anchor_poi", "label": "Anchor POI", "raw_value": 9, "unit": "titik", "percentile": 92, "weight": 0.35, "contribution": 8.1, "evidence": "9 kantor & mall kelas atas dalam radius — magnet demand yang kuat." },
+      { "key": "purchasing_power", "label": "Daya beli", "raw_value": 1.35, "unit": "indeks", "percentile": 95, "weight": 0.2, "contribution": 5.0, "evidence": "Indeks daya beli 1.35 (modeled) — persentil ke-95 se-Jakarta Selatan.", "is_modeled": true },
+      { "key": "weighted_density", "label": "Kepadatan kompetitor", "raw_value": 3, "unit": "kompetitor", "percentile": 40, "weight": 0.5, "contribution": 2.3, "evidence": "Hanya 3 kompetitor efektif — pasar premium belum jenuh." }
+    ]
+  },
+  {
+    "id": "tebet",
+    "name": "Tebet",
+    "lat": -6.2264,
+    "lng": 106.8531,
+    "demand": 78,
+    "competitor_distances_m": [120, 180, 230, 300, 350, 420, 500, 650],
+    "factors": [
+      { "key": "population_density", "label": "Kepadatan penduduk", "raw_value": 16472, "unit": "jiwa/km²", "percentile": 78, "weight": 0.25, "contribution": 3.8, "evidence": "16.472 jiwa/km² — persentil ke-78, demand residensial tinggi." },
+      { "key": "weighted_density", "label": "Kepadatan kompetitor", "raw_value": 10, "unit": "kompetitor", "percentile": 97, "weight": 0.5, "contribution": -10.6, "evidence": "10 kompetitor efektif dalam 1 km — persentil ke-97 terpadat. Sudah jenuh." },
+      { "key": "nearest_distance", "label": "Jarak kompetitor terdekat", "raw_value": 120, "unit": "m", "percentile": 7, "weight": 0.2, "contribution": -3.9, "evidence": "Kompetitor terdekat hanya 120 m — head-to-head." }
+    ]
+  },
+  {
+    "id": "cilandak",
+    "name": "Cilandak / TB Simatupang",
+    "lat": -6.2905,
+    "lng": 106.7995,
+    "demand": 58,
+    "competitor_distances_m": [800, 1500],
+    "factors": [
+      { "key": "weighted_density", "label": "Kepadatan kompetitor", "raw_value": 2, "unit": "kompetitor", "percentile": 15, "weight": 0.5, "contribution": 9.4, "evidence": "Hanya 2 kompetitor jauh — ruang kompetisi masih terbuka lebar." },
+      { "key": "anchor_poi", "label": "Anchor POI", "raw_value": 5, "unit": "titik", "percentile": 70, "weight": 0.35, "contribution": 3.6, "evidence": "5 anchor (kampus, RS, kantor) menopang demand siang hari." },
+      { "key": "population_density", "label": "Kepadatan penduduk", "raw_value": 9800, "unit": "jiwa/km²", "percentile": 45, "weight": 0.25, "contribution": -0.6, "evidence": "9.800 jiwa/km² — kepadatan residensial menengah." }
+    ]
+  }
+]
