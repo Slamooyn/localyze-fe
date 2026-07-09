@@ -10,13 +10,14 @@ import { JAKSEL_VIEW, MAP_STYLE } from "@/lib/mapStyle";
 interface Props {
   onClick?: (e: MapLayerMouseEvent) => void;
   onMouseMove?: (e: MapLayerMouseEvent) => void;
+  onLoad?: () => void;
   interactiveLayerIds?: string[];
   children?: ReactNode;
   cursor?: string;
 }
 
 const MapCanvas = forwardRef<MapRef, Props>(function MapCanvas(
-  { onClick, onMouseMove, interactiveLayerIds, children, cursor },
+  { onClick, onMouseMove, onLoad, interactiveLayerIds, children, cursor },
   ref,
 ) {
   return (
@@ -27,6 +28,7 @@ const MapCanvas = forwardRef<MapRef, Props>(function MapCanvas(
       style={{ width: "100%", height: "100%" }}
       onClick={onClick}
       onMouseMove={onMouseMove}
+      onLoad={onLoad}
       interactiveLayerIds={interactiveLayerIds}
       cursor={cursor}
       attributionControl={true}
