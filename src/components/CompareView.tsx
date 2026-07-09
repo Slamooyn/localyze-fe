@@ -11,6 +11,8 @@ import type { Analysis } from "@/lib/api/types";
 import { signed } from "@/lib/format";
 import { useAppStore } from "@/lib/store";
 import { VERDICT_HEX } from "@/lib/verdict";
+import { PageHeader } from "@/components/shell/PageHeader";
+import { Card } from "@/components/ui/Card";
 import { VerdictBadge } from "./VerdictBadge";
 
 const CompareMiniMap = dynamic(() => import("./CompareMiniMap").then((m) => m.CompareMiniMap), {
@@ -59,18 +61,14 @@ export function CompareView() {
   const cols = `160px repeat(${analyses.length}, minmax(0, 1fr))`;
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="h-48 shrink-0 border-b border-slate-200">
+    <div className="p-5">
+      <PageHeader title="Perbandingan Lokasi" subtitle="Adu kandidat berdampingan, faktor per faktor." />
+      <Card className="mb-4 h-56 overflow-hidden">
         <CompareMiniMap analyses={analyses} />
-      </div>
+      </Card>
 
-      <div className="scroll-slim min-h-0 flex-1 overflow-auto p-4">
-        <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-slate-800">
-          <Scale className="h-4 w-4 text-brand" />
-          Perbandingan lokasi
-        </h2>
-
-        <div className="min-w-[520px]">
+      <Card className="p-4">
+        <div className="min-w-[520px] overflow-x-auto">
           {/* Header */}
           <div className="grid items-end gap-2" style={{ gridTemplateColumns: cols }}>
             <div />
@@ -153,7 +151,7 @@ export function CompareView() {
             Jadikan keputusan (export memo)
           </button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

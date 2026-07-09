@@ -6,22 +6,30 @@ import { useEffect, useState } from "react";
 
 import { useAppStore } from "@/lib/store";
 
-/** Redirects unauthenticated users to /login. Renders a neutral splash until the
- * persisted token is confirmed (avoids SSR/hydration flash of protected content). */
+/** Redirects unauthenticated users to /login. Waits for the persisted store to
+ * rehydrate from localStorage before deciding, so a valid token is never missed
+ * on a hard navigation (which would otherwise bounce the user to /login). */
 export function AppGuard({ children }: { children: React.ReactNode }) {
   const token = useAppStore((s) => s.token);
   const router = useRouter();
   const pathname = usePathname();
+  const [hydrated, setHydrated] = useState(false);
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
+    setHydrated(useAppStore.persist.hasHydrated());
+    const unsub = useAppStore.persist.onFinishHydration(() => setHydrated(true));
+    return unsub;
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
     if (!token) {
-      const next = encodeURIComponent(pathname);
-      router.replace(`/login?next=${next}`);
+      router.replace(`/login?next=${encodeURIComponent(pathname)}`);
     } else {
       setChecked(true);
     }
-  }, [token, pathname, router]);
+  }, [hydrated, token, pathname, router]);
 
   if (!checked) {
     return (

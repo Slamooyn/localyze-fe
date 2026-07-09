@@ -1,12 +1,13 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, FileWarning, Store, Trash2, Upload } from "lucide-react";
+import { CheckCircle2, FileWarning, Trash2, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { api } from "@/lib/api/client";
 import type { OutletImportReport } from "@/lib/api/types";
 import { useAppStore } from "@/lib/store";
+import { PageHeader } from "@/components/shell/PageHeader";
 
 export function OutletsView() {
   const qc = useQueryClient();
@@ -40,17 +41,12 @@ export function OutletsView() {
   const count = outlets?.features.length ?? 0;
 
   return (
-    <div className="scroll-slim h-full overflow-auto p-4">
+    <div className="p-5">
+      <PageHeader
+        title="Outlet Saya"
+        subtitle="Import cabang existing untuk menghitung risiko kanibalisasi antar cabang."
+      />
       <div className="mx-auto max-w-2xl space-y-5">
-        <div>
-          <h2 className="flex items-center gap-1.5 text-sm font-semibold text-slate-800">
-            <Store className="h-4 w-4 text-brand" /> Outlet Saya
-          </h2>
-          <p className="mt-1 text-xs text-slate-500">
-            Outlet kamu dipakai untuk menghitung risiko kanibalisasi antar cabang saat menganalisis
-            lokasi baru.
-          </p>
-        </div>
 
         {/* Dropzone */}
         <div
