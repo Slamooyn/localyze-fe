@@ -3,13 +3,14 @@
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { ArrowRight, BadgeCheck, Gauge, MapPin, Store, Trophy } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import { FactorRow } from "@/components/FactorRow";
 import { ScoreDial } from "@/components/ScoreDial";
 import { VerdictBadge } from "@/components/VerdictBadge";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import type { Factor } from "@/lib/api/types";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import { SAMPLE_LOCATIONS, scoreLocation } from "@/landing/scoring-mini";
 import { BrowserFrame } from "./BrowserFrame";
 
@@ -22,18 +23,6 @@ const STEPS = [
 
 const tebet = SAMPLE_LOCATIONS.find((l) => l.id === "tebet")!;
 const scbd = SAMPLE_LOCATIONS.find((l) => l.id === "scbd")!;
-
-function usePrefersReducedMotion() {
-  const [reduce, setReduce] = useState(false);
-  useEffect(() => {
-    const m = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduce(m.matches);
-    const on = () => setReduce(m.matches);
-    m.addEventListener("change", on);
-    return () => m.removeEventListener("change", on);
-  }, []);
-  return reduce;
-}
 
 function P0() {
   return (

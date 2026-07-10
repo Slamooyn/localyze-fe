@@ -19,9 +19,9 @@ import Link from "next/link";
 import { Wordmark } from "@/components/Logo";
 import { VerdictBadge } from "@/components/VerdictBadge";
 import { BenefitCard } from "./BenefitCard";
-import { CinematicHeroStatic } from "./CinematicHeroStatic";
-import { CountUpStat } from "./CountUpStat";
+import { ContainerScroll } from "./ContainerScroll";
 import { DashboardPreview } from "./DashboardPreview";
+import { GlowyWavesHero } from "./GlowyWavesHero";
 import { FaqAccordion } from "./FaqAccordion";
 import { FormulaHero } from "./FormulaHero";
 import { HowItWorks } from "./HowItWorks";
@@ -59,30 +59,27 @@ export function LandingPage({ hasScreenshot = false }: { hasScreenshot?: boolean
     <div className="min-h-screen bg-white">
       <LandingNavbar />
 
-      {/* S1 — Hero (L1: static variant; GSAP CinematicHero lands in L2) */}
-      <section className="relative">
-        <CinematicHeroStatic />
-        {/* Trust strip — jembatan hero → S2 */}
-        <div className="border-t border-white/10 bg-[#131F45]">
-          <div className="mx-auto grid max-w-3xl grid-cols-3 gap-4 px-4 py-6">
-            <CountUpStat value={2300} suffix="+" label="titik grid dianalisis" />
-            <CountUpStat value={420} suffix="+" label="kompetitor terpetakan" />
-            <CountUpStat value={3} label="kategori franchise" />
-          </div>
-        </div>
-      </section>
+      {/* S1 — Hero: glowy waves canvas */}
+      <GlowyWavesHero />
 
-      {/* S2 — Dashboard reveal (L1 shell; ContainerScroll lands in L2) */}
-      <section className="mx-auto max-w-5xl px-4 py-20 text-center">
-        <motion.div {...reveal}>
-          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-            Seperti ini dashboard-nya.
-          </h2>
-          <p className="mt-2 text-slate-500">Peta, skor, dan bukti — dalam satu layar.</p>
-        </motion.div>
-        <div className="relative mx-auto mt-10 aspect-[16/9] w-full overflow-hidden rounded-3xl border-4 border-[#172554] bg-[#0B1B3B] shadow-2xl">
+      {/* S2 — Dashboard reveal */}
+      <section
+        id="preview"
+        aria-label="Pratinjau dashboard"
+        className="bg-gradient-to-b from-slate-100 to-white"
+      >
+        <ContainerScroll
+          titleComponent={
+            <div className="mb-6">
+              <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+                Seperti ini dashboard-nya.
+              </h2>
+              <p className="mt-2 text-slate-500">Peta, skor, dan bukti — dalam satu layar.</p>
+            </div>
+          }
+        >
           <DashboardPreview hasScreenshot={hasScreenshot} />
-        </div>
+        </ContainerScroll>
       </section>
 
       {/* S3 — What you get */}

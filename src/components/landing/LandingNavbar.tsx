@@ -14,9 +14,8 @@ export function LandingNavbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const linkClass = solid
-    ? "text-slate-600 hover:bg-slate-100"
-    : "text-blue-100 hover:bg-white/10";
+  // Hero is light (canvas waves on white) — the transparent state uses dark text too.
+  const linkClass = "text-slate-600 hover:bg-slate-900/5";
 
   return (
     <header
@@ -25,7 +24,7 @@ export function LandingNavbar() {
       }`}
     >
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-        <Wordmark onNavy={!solid} />
+        <Wordmark />
         <nav className="flex items-center gap-1 text-sm">
           <a href="#how" className={`hidden rounded-lg px-3 py-1.5 font-medium transition sm:block ${linkClass}`}>
             Cara kerja

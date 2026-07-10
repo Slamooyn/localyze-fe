@@ -7,11 +7,15 @@ export function CountUpStat({
   suffix = "",
   label,
   duration = 1400,
+  valueClassName = "text-white",
+  labelClassName = "text-blue-200/70",
 }: {
   value: number;
   suffix?: string;
   label: string;
   duration?: number;
+  valueClassName?: string;
+  labelClassName?: string;
 }) {
   const [display, setDisplay] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
@@ -47,11 +51,11 @@ export function CountUpStat({
 
   return (
     <div ref={ref} className="text-center">
-      <div className="tnum text-2xl font-bold text-white sm:text-3xl">
+      <div className={`tnum text-2xl font-bold sm:text-3xl ${valueClassName}`}>
         {display.toLocaleString("id-ID")}
         {suffix}
       </div>
-      <div className="mt-1 text-xs text-blue-200/70">{label}</div>
+      <div className={`mt-1 text-xs ${labelClassName}`}>{label}</div>
     </div>
   );
 }
