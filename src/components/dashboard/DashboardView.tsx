@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 import { api, ApiError } from "@/lib/api/client";
 import type { Analysis, Factor, GeoJSONFC, LatLng } from "@/lib/api/types";
@@ -137,8 +138,9 @@ export function DashboardView() {
     if (!analysis) return;
     try {
       setAnalysis(await api.patchAnalysis(analysis.id, name));
+      toast.success("Nama analisis disimpan");
     } catch {
-      /* ignore */
+      toast.error("Gagal menyimpan nama");
     }
   };
 
@@ -197,7 +199,10 @@ export function DashboardView() {
                 </button>
               )}
               <button
-                onClick={() => addToCompare(analysis.id)}
+                onClick={() => {
+                  addToCompare(analysis.id);
+                  toast.success("Ditambahkan ke compare tray");
+                }}
                 disabled={inCompare}
                 className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-white transition enabled:hover:bg-brand-bright disabled:opacity-40"
               >
@@ -218,17 +223,19 @@ export function DashboardView() {
       <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
         <KpiCard
           icon={Gauge}
+          index={0}
           label="Localyze Score"
           loading={loading}
           value={s ? s.composite.toFixed(0) : undefined}
           sub={s ? `${s.composite > 50 ? "+" : ""}${(s.composite - 50).toFixed(0)} vs rata-rata` : undefined}
         />
-        <KpiCard icon={BadgeCheck} label="Verdict" loading={loading}>
+        <KpiCard icon={BadgeCheck} index={1} label="Verdict" loading={loading}>
           {s && <VerdictBadge verdict={s.verdict} size="md" />}
         </KpiCard>
         <KpiCard
           icon={Store}
           iconClass="bg-avoid/10 text-avoid"
+          index={2}
           label="Kompetitor"
           loading={loading}
           value={s ? String(competitors.length) : undefined}
@@ -237,6 +244,7 @@ export function DashboardView() {
         <KpiCard
           icon={Users}
           iconClass="bg-brand/10 text-brand"
+          index={3}
           label="Kepadatan"
           loading={loading}
           value={density ? idNum(Number(density.raw_value)) : undefined}
@@ -245,6 +253,7 @@ export function DashboardView() {
         <KpiCard
           icon={ShieldCheck}
           iconClass={s && s.confidence < 0.7 ? "bg-amber-100 text-amber-600" : "bg-slate-100 text-slate-500"}
+          index={4}
           label="Confidence"
           loading={loading}
           value={s ? `${Math.round(s.confidence * 100)}%` : undefined}
@@ -253,6 +262,7 @@ export function DashboardView() {
         <KpiCard
           icon={AlertTriangle}
           iconClass={s && s.cannibalization_penalty > 0 ? "bg-avoid/10 text-avoid" : "bg-slate-100 text-slate-500"}
+          index={5}
           label="Kanibalisasi"
           loading={loading}
           value={

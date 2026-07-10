@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, History, MapPin, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { api } from "@/lib/api/client";
 import type { AnalysisSummary, Verdict } from "@/lib/api/types";
@@ -25,7 +26,10 @@ export function HistoryView() {
   });
   const remove = useMutation({
     mutationFn: (id: string) => api.deleteAnalysis(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["analyses"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["analyses"] });
+      toast.success("Analisis dihapus");
+    },
   });
 
   const [editId, setEditId] = useState<string | null>(null);

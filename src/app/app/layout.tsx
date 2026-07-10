@@ -1,3 +1,5 @@
+import { Toaster } from "sonner";
+
 import { CompareTray } from "@/components/CompareTray";
 import { Providers } from "@/components/Providers";
 import { AppGuard } from "@/components/shell/AppGuard";
@@ -15,6 +17,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <main className="scroll-slim min-h-0 flex-1 overflow-y-auto">{children}</main>
           </div>
           <CompareTray />
+          <Toaster position="top-right" richColors closeButton />
         </div>
       </AppGuard>
     </Providers>

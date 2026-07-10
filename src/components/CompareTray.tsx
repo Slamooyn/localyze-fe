@@ -1,9 +1,11 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { Scale, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { easeOutExpo } from "@/lib/motion";
 import { useAppStore } from "@/lib/store";
 
 export function CompareTray() {
@@ -12,11 +14,17 @@ export function CompareTray() {
   const clear = useAppStore((s) => s.clearCompare);
   const router = useRouter();
 
-  if (compareIds.length === 0) return null;
-
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-4">
-      <div className="pointer-events-auto flex items-center gap-3 rounded-xl border border-slate-200 bg-white/95 px-3 py-2 shadow-lg backdrop-blur">
+    <AnimatePresence>
+      {compareIds.length > 0 && (
+        <div className="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 24 }}
+            transition={{ duration: 0.3, ease: easeOutExpo }}
+            className="pointer-events-auto flex items-center gap-3 rounded-xl border border-slate-200 bg-white/95 px-3 py-2 shadow-lg backdrop-blur"
+          >
         <span className="flex items-center gap-1.5 text-sm font-medium text-slate-600">
           <Scale className="h-4 w-4 text-brand" />
           Compare tray
@@ -51,7 +59,9 @@ export function CompareTray() {
         <Link href="/app/compare" className="sr-only">
           Compare
         </Link>
-      </div>
-    </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }

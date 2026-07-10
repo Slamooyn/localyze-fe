@@ -1,8 +1,10 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { pop } from "@/lib/motion";
 import { useCategories } from "@/lib/hooks";
 import { useAppStore } from "@/lib/store";
 
@@ -33,9 +35,17 @@ export function CategorySwitcher() {
         <span className="text-slate-900">{active?.name ?? "…"}</span>
         <ChevronDown className="h-4 w-4 text-slate-400" />
       </button>
-      {open && categories && (
-        <div className="absolute right-0 z-30 mt-1 w-56 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
-          {categories.map((c) => (
+      <AnimatePresence>
+        {open && categories && (
+          <motion.div
+            variants={pop}
+            initial="hidden"
+            animate="show"
+            exit="exit"
+            style={{ transformOrigin: "top right" }}
+            className="absolute right-0 z-30 mt-1 w-56 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-lg"
+          >
+            {categories.map((c) => (
             <button
               key={c.slug}
               onClick={() => {
@@ -49,9 +59,10 @@ export function CategorySwitcher() {
               {c.name}
               <span className="text-xs text-slate-400">{c.default_radius_m} m</span>
             </button>
-          ))}
-        </div>
-      )}
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

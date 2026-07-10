@@ -41,7 +41,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`flex shrink-0 flex-col bg-gradient-to-b from-navy to-navy-800 text-slate-300 transition-[width] duration-200 ${
+      className={`flex shrink-0 flex-col bg-gradient-to-b from-navy to-navy-800 text-slate-300 transition-[width] duration-300 ease-[cubic-bezier(0.45,0,0.55,1)] ${
         collapsed ? "w-[72px]" : "w-[260px]"
       }`}
     >

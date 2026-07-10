@@ -4,6 +4,7 @@
 
 :root {
   --topbar-h: 56px;
+  --brand: #2563eb;
   --font-inter: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -14,6 +15,49 @@ body {
 
 body {
   @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+/* --- craft polish (design-craft-guidelines.md §5) --- */
+::selection {
+  background: #bfdbfe; /* brand-100 */
+  color: #172554;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+
+/* Smooth hover + press feedback on every button; press = scale, never layout shift */
+button {
+  transition:
+    transform 100ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    opacity 150ms ease;
+}
+button:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+/* Single, consistent focus ring on all interactive elements */
+:where(a, button, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .tnum {

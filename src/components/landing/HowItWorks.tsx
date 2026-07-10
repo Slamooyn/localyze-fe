@@ -60,28 +60,17 @@ function P0() {
 
 function P1({ active }: { active: boolean }) {
   const scored = scoreLocation(tebet);
-  const [score, setScore] = useState(0);
-  useEffect(() => {
-    if (!active) return;
-    const start = performance.now();
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / 900);
-      setScore((1 - Math.pow(1 - t, 3)) * scored.composite);
-      if (t < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }, [active, scored.composite]);
   return (
     <div className="p-4">
       <div className="mb-3 grid grid-cols-3 gap-2">
-        <KpiCard icon={Gauge} label="Score" value={score.toFixed(0)} />
+        <KpiCard icon={Gauge} label="Score" value={scored.composite.toFixed(0)} />
         <KpiCard icon={BadgeCheck} label="Verdict">
           <VerdictBadge verdict={scored.verdict} size="sm" />
         </KpiCard>
         <KpiCard icon={Store} iconClass="bg-avoid/10 text-avoid" label="Kompetitor" value="18" />
       </div>
       <div className="flex items-center gap-3 rounded-xl bg-white p-3">
-        <ScoreDial score={score} verdict={scored.verdict} size={96} label="" />
+        <ScoreDial score={scored.composite} verdict={scored.verdict} size={96} label="" />
         <div className="flex-1">
           {tebet.factors.slice(0, 3).map((f, i) => (
             <motion.div

@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import {
   Layer,
@@ -160,12 +161,21 @@ export function AnalyzeMap({
 
 function TargetPin() {
   return (
-    <svg width="30" height="40" viewBox="0 0 30 40" className="cursor-grab drop-shadow-lg">
+    <motion.svg
+      width="30"
+      height="40"
+      viewBox="0 0 30 40"
+      className="cursor-grab drop-shadow-lg"
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
+      style={{ transformOrigin: "50% 100%" }}
+    >
       <path
         d="M15 0C7 0 1 6 1 13.5 1 24 15 40 15 40s14-16 14-26.5C29 6 23 0 15 0Z"
         fill="#1D4ED8"
       />
       <circle cx="15" cy="13.5" r="5" fill="#fff" />
-    </svg>
+    </motion.svg>
   );
 }

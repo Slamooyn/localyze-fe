@@ -1,6 +1,9 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { ArrowDownRight, ArrowUpRight, type LucideIcon } from "lucide-react";
 
-import { Card } from "@/components/ui/Card";
+import { dur, easeOutExpo } from "@/lib/motion";
 
 export function DeltaChip({ value, unit = "" }: { value: number; unit?: string }) {
   if (value === 0) return null;
@@ -26,6 +29,7 @@ export function KpiCard({
   value,
   sub,
   loading = false,
+  index = 0,
   children,
 }: {
   icon: LucideIcon;
@@ -34,10 +38,16 @@ export function KpiCard({
   value?: React.ReactNode;
   sub?: React.ReactNode;
   loading?: boolean;
+  index?: number;
   children?: React.ReactNode;
 }) {
   return (
-    <Card className="p-3.5">
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: dur.base, ease: easeOutExpo, delay: Math.min(index, 6) * 0.03 }}
+      className="rounded-2xl border border-slate-200/70 bg-white p-3.5 shadow-sm"
+    >
       <div className="flex items-start gap-3">
         <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${iconClass}`}>
           <Icon className="h-[18px] w-[18px]" />
@@ -57,6 +67,6 @@ export function KpiCard({
           {!loading && children}
         </div>
       </div>
-    </Card>
+    </motion.div>
   );
 }

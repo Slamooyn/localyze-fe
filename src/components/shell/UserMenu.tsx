@@ -1,9 +1,11 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, LogOut, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import { pop } from "@/lib/motion";
 import { useAppStore } from "@/lib/store";
 
 export function UserMenu() {
@@ -42,9 +44,17 @@ export function UserMenu() {
         </span>
         <ChevronDown className="h-4 w-4 text-slate-400" />
       </button>
-      {open && (
-        <div className="absolute right-0 z-40 mt-1 w-52 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
-          <div className="border-b border-slate-100 px-3 py-2">
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            variants={pop}
+            initial="hidden"
+            animate="show"
+            exit="exit"
+            style={{ transformOrigin: "top right" }}
+            className="absolute right-0 z-40 mt-1 w-52 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-lg"
+          >
+            <div className="border-b border-slate-100 px-3 py-2">
             <p className="truncate text-sm font-medium text-slate-800">{user?.name}</p>
             <p className="truncate text-xs text-slate-400">{user?.email}</p>
           </div>
@@ -66,8 +76,9 @@ export function UserMenu() {
           >
             <LogOut className="h-4 w-4" /> Keluar
           </button>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -1,26 +1,33 @@
+"use client";
+
 import type { Verdict } from "@/lib/api/types";
+import { useCountUp } from "@/lib/useCountUp";
 import { VERDICT_HEX } from "@/lib/verdict";
 
 // Donut 0-100 with the four verdict bands as a faint track and the score as a
-// colored arc. tabular-nums for the number.
+// colored arc. The arc + number count up together, once per new value.
 export function ScoreDial({
   score,
   verdict,
   size = 132,
   label = "Localyze Score",
+  animate = true,
 }: {
   score: number;
   verdict: Verdict;
   size?: number;
   label?: string;
+  animate?: boolean;
 }) {
+  const animated = useCountUp(score, 600);
+  const shown = animate ? animated : score;
+
   const stroke = size * 0.1;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
-  const pct = Math.max(0, Math.min(100, score)) / 100;
+  const pct = Math.max(0, Math.min(100, shown)) / 100;
   const color = VERDICT_HEX[verdict];
 
-  // faint band segments (0-50, 50-65, 65-80, 80-100)
   const bands = [
     { from: 0, to: 50, col: VERDICT_HEX.avoid },
     { from: 50, to: 65, col: VERDICT_HEX.conditional },
@@ -55,16 +62,18 @@ export function ScoreDial({
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={`${c * pct} ${c}`}
-          style={{ transition: "stroke-dasharray 500ms ease, stroke 300ms" }}
+          style={{ transition: "stroke 300ms" }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="tnum text-3xl font-bold text-slate-900" style={{ color }}>
-          {score.toFixed(0)}
+        <span className="tnum text-3xl font-bold" style={{ color }}>
+          {shown.toFixed(0)}
         </span>
-        <span className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
-          {label}
-        </span>
+        {label && (
+          <span className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+            {label}
+          </span>
+        )}
       </div>
     </div>
   );

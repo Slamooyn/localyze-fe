@@ -2,7 +2,7 @@
 
 import "maplibre-gl/dist/maplibre-gl.css";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Map, { Layer, type MapRef, Marker, Source } from "react-map-gl/maplibre";
 
 import { ScoreDial } from "@/components/ScoreDial";
@@ -14,28 +14,9 @@ import { SAMPLE_LOCATIONS, scoreLocation } from "@/landing/scoring-mini";
 export function MiniMap() {
   const mapRef = useRef<MapRef>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [animScore, setAnimScore] = useState(0);
 
   const selected = SAMPLE_LOCATIONS.find((l) => l.id === selectedId) ?? null;
   const scored = selected ? scoreLocation(selected) : null;
-
-  useEffect(() => {
-    if (!scored) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      setAnimScore(scored.composite);
-      return;
-    }
-    const start = performance.now();
-    const from = 0;
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / 900);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setAnimScore(from + eased * scored.composite);
-      if (t < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }, [selectedId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="relative h-[360px] w-full overflow-hidden rounded-2xl border border-white/10 shadow-2xl sm:h-[420px]">
@@ -86,7 +67,7 @@ export function MiniMap() {
         </div>
       ) : (
         <div className="absolute bottom-4 left-4 flex items-center gap-3 rounded-xl bg-white/95 p-3 shadow-lg backdrop-blur">
-          <ScoreDial score={animScore} verdict={scored.verdict} size={84} label="" />
+          <ScoreDial score={scored.composite} verdict={scored.verdict} size={84} label="" />
           <div>
             <p className="text-sm font-semibold text-slate-800">{selected!.name}</p>
             <div className="mt-1">

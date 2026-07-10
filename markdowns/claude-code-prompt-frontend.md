@@ -18,6 +18,10 @@ Baca spec ini sampai selesai sebelum menulis kode:
    design tokens, component inventory
 2. markdowns/tech-`stack-frontend.md — stack final + struktur route
 3. ../localyze-be/markdowns/api-contract.md — semua shape request/response TERMASUK §0 Auth
+4. markdowns/design-craft-guidelines.md — WAJIB: filosofi motion & polish ala Emil
+   Kowalski (motion tokens, micro-interactions per komponen, polish checklist).
+   Buat src/lib/motion.ts dari §2 dokumen itu di M1 dan pakai di semua animasi.
+   sonner (toast) & vaul (sheet/drawer) diizinkan — selain itu tetap tanpa lib komponen.
 Catatan: landing page (/) BUKAN scope prompt ini — dikerjakan terpisah via
 claude-code-prompt-landing.md. Sediakan / sebagai redirect sementara ke /login.
 breakdown.*.factors[].evidence dari API sudah kalimat siap-render — jangan disusun ulang.
@@ -68,9 +72,14 @@ M7. Outlets (/app/settings/outlets): CsvDropzone → laporan import + skipped ro
     daftar outlet, toggle layer peta global. Lalu polish pass: transisi, focus
     states, kontras, tsc + ESLint clean.
 
-## QUALITY BAR (UIUXProMax standard)
+## QUALITY BAR (UIUXProMax + design-craft-guidelines.md)
+- Ikuti motion tokens & resep micro-interaction per komponen di design-craft-guidelines.md
+  §2-§4: animate hanya transform/opacity, entrance easeOutExpo, exit 0.8x lebih cepat,
+  animasi masuk sekali saja (refetch tidak memicu ulang), reduced-motion dihormati.
+- Definition of Done tiap milestone = §6 dokumen itu (no layout shift, interruptible,
+  keyboard pass, zoom-out pass).
 - Verdict SELALU badge teks + warna, tidak pernah warna saja.
-- Angka skor tabular-nums; skeleton per card; tanpa layout shift; transisi 150-200ms.
+- Angka skor tabular-nums; skeleton per card = layout final persis.
 - Semua state URL-addressable (?lat&lng&category) — demo harus bisa di-deep-link.
 - Desktop-first 1280+; sidebar collapsed harus tetap usable di 1024.
 - Komponen kecil terisolasi, nama sesuai inventory spec §12.

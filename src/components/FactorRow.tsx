@@ -1,10 +1,12 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 import type { Factor } from "@/lib/api/types";
 import { idNum, signed } from "@/lib/format";
+import { dur, easeOutExpo } from "@/lib/motion";
 import { ModeledBadge } from "./ModeledBadge";
 import { PercentileBar } from "./PercentileBar";
 
@@ -21,7 +23,7 @@ export function FactorRow({ factor, defaultOpen = false }: { factor: Factor; def
       >
         <span className="flex min-w-0 items-center gap-1.5">
           <ChevronDown
-            className={`h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
+            className={`h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           />
           <span className="truncate text-sm text-slate-700">{factor.label}</span>
           {factor.is_modeled && <ModeledBadge />}
@@ -34,21 +36,34 @@ export function FactorRow({ factor, defaultOpen = false }: { factor: Factor; def
           {signed(factor.contribution)}
         </span>
       </button>
-      {open && (
-        <div className="space-y-2 pb-3 pl-5 pr-1">
-          <p className="text-xs leading-relaxed text-slate-500">{factor.evidence}</p>
-          <div className="flex items-center gap-3 text-[11px] text-slate-400">
-            {factor.raw_value != null && (
-              <span className="tnum">
-                Nilai: <span className="text-slate-600">{idNum(factor.raw_value, factor.raw_value % 1 ? 2 : 0)}</span>{" "}
-                {factor.unit}
-              </span>
-            )}
-            <span>bobot {Math.round(factor.weight * 100)}%</span>
-          </div>
-          <PercentileBar percentile={factor.percentile} />
-        </div>
-      )}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: dur.base, ease: easeOutExpo }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-2 pb-3 pl-5 pr-1">
+              <p className="text-xs leading-relaxed text-slate-500">{factor.evidence}</p>
+              <div className="flex items-center gap-3 text-[11px] text-slate-400">
+                {factor.raw_value != null && (
+                  <span className="tnum">
+                    Nilai:{" "}
+                    <span className="text-slate-600">
+                      {idNum(factor.raw_value, factor.raw_value % 1 ? 2 : 0)}
+                    </span>{" "}
+                    {factor.unit}
+                  </span>
+                )}
+                <span>bobot {Math.round(factor.weight * 100)}%</span>
+              </div>
+              <PercentileBar percentile={factor.percentile} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

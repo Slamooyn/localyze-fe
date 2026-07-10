@@ -4,6 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, FileWarning, Trash2, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 
+import { toast } from "sonner";
+
 import { api } from "@/lib/api/client";
 import type { OutletImportReport } from "@/lib/api/types";
 import { useAppStore } from "@/lib/store";
@@ -24,13 +26,18 @@ export function OutletsView() {
     onSuccess: (r) => {
       setReport(r);
       qc.invalidateQueries({ queryKey: ["outlets"] });
+      toast.success(`${r.imported} outlet diimpor`, {
+        description: r.skipped.length ? `${r.skipped.length} baris dilewati` : undefined,
+      });
     },
+    onError: () => toast.error("Gagal mengimpor CSV"),
   });
   const deleteMut = useMutation({
     mutationFn: () => api.deleteOutlets(),
     onSuccess: () => {
       setReport(null);
       qc.invalidateQueries({ queryKey: ["outlets"] });
+      toast.success("Semua outlet dihapus");
     },
   });
 

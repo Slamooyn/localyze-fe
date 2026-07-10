@@ -14,9 +14,13 @@ landing SaaS modern (referensi rasa: Linear, Resend, Vercel), identitas Localyze
 ## LANGKAH PERTAMA (WAJIB)
 1. Baca markdowns/landing-page-spec.md (v2) sampai selesai — struktur S1-S6,
    copywriting, dan aturan performa TIDAK boleh diubah tanpa alasan kuat.
-2. Inventaris komponen app yang di-reuse: ScoreDial, FactorRow, VerdictBadge,
+2. Baca markdowns/design-craft-guidelines.md — motion tokens (src/lib/motion.ts sudah
+   ada dari milestone app, pakai itu), aturan transform/opacity-only, exit 0.8x,
+   reduced-motion. Landing boleh sedikit lebih ekspresif dari app (durasi scroll-driven
+   mengikuti scroll progress), tapi filosofinya sama: halus, cepat, punya alasan.
+3. Inventaris komponen app yang di-reuse: ScoreDial, FactorRow, VerdictBadge,
    KpiCard, tokens Tailwind. Landing WAJIB reuse, bukan membuat tiruan.
-3. Logo: public/logo-localyze.png (sudah ada dari milestone app; sumber asli
+4. Logo: public/logo-localyze.png (sudah ada dari milestone app; sumber asli
    src/app/image copy.png). Navbar, footer, OG image pakai file ini.
 
 ## ATURAN KERAS
