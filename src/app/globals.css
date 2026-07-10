@@ -6,6 +6,14 @@
   --topbar-h: 56px;
   --brand: #2563eb;
   --font-inter: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Canvas hero palette (spec §3) — GlowyWavesHero reads these when drawing waves */
+  --background: #ffffff;
+  --muted: #f1f5f9; /* slate-100 */
+  --primary: #1d4ed8;
+  --accent: #22d3ee;
+  --secondary: #0d9488;
+  --foreground: #0f172a; /* slate-900 */
 }
 
 html,

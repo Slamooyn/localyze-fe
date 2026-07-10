@@ -1,3 +1,6 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
 import type { Metadata } from "next";
 
 import { LandingPage } from "@/components/landing/LandingPage";
@@ -15,5 +18,7 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <LandingPage />;
+  // Decided at build time (SSG): real dashboard screenshot vs navy placeholder.
+  const hasScreenshot = existsSync(join(process.cwd(), "public/screenshots/dashboard.png"));
+  return <LandingPage hasScreenshot={hasScreenshot} />;
 }

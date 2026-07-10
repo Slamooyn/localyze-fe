@@ -21,6 +21,7 @@ import { VerdictBadge } from "@/components/VerdictBadge";
 import { BenefitCard } from "./BenefitCard";
 import { CinematicHeroStatic } from "./CinematicHeroStatic";
 import { CountUpStat } from "./CountUpStat";
+import { DashboardPreview } from "./DashboardPreview";
 import { FaqAccordion } from "./FaqAccordion";
 import { FormulaHero } from "./FormulaHero";
 import { HowItWorks } from "./HowItWorks";
@@ -53,7 +54,7 @@ const PERSONAS = [
   { icon: Users, title: "Investor / VC", body: "Validasi klaim lokasi sebuah brand dengan angka independen." },
 ];
 
-export function LandingPage() {
+export function LandingPage({ hasScreenshot = false }: { hasScreenshot?: boolean }) {
   return (
     <div className="min-h-screen bg-white">
       <LandingNavbar />
@@ -71,7 +72,20 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* S2 — What you get */}
+      {/* S2 — Dashboard reveal (L1 shell; ContainerScroll lands in L2) */}
+      <section className="mx-auto max-w-5xl px-4 py-20 text-center">
+        <motion.div {...reveal}>
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+            Seperti ini dashboard-nya.
+          </h2>
+          <p className="mt-2 text-slate-500">Peta, skor, dan bukti — dalam satu layar.</p>
+        </motion.div>
+        <div className="relative mx-auto mt-10 aspect-[16/9] w-full overflow-hidden rounded-3xl border-4 border-[#172554] bg-[#0B1B3B] shadow-2xl">
+          <DashboardPreview hasScreenshot={hasScreenshot} />
+        </div>
+      </section>
+
+      {/* S3 — What you get */}
       <section id="features" className="mx-auto max-w-6xl px-4 py-20">
         <motion.div {...reveal} className="text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-brand">Apa yang kamu dapat</p>
