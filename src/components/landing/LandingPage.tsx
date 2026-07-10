@@ -4,14 +4,12 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   Building2,
-  ChevronDown,
   Compass,
   Gauge,
   Landmark,
   Map,
   Scale,
   ShieldAlert,
-  Sparkles,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -21,17 +19,13 @@ import Link from "next/link";
 import { Wordmark } from "@/components/Logo";
 import { VerdictBadge } from "@/components/VerdictBadge";
 import { BenefitCard } from "./BenefitCard";
+import { CinematicHeroStatic } from "./CinematicHeroStatic";
 import { CountUpStat } from "./CountUpStat";
 import { FaqAccordion } from "./FaqAccordion";
 import { FormulaHero } from "./FormulaHero";
 import { HowItWorks } from "./HowItWorks";
 import { LandingNavbar } from "./LandingNavbar";
 import { DecayCurve, PercentileHisto } from "./MicroViz";
-
-const MiniMap = dynamic(() => import("./MiniMap").then((m) => m.MiniMap), {
-  ssr: false,
-  loading: () => <div className="h-[360px] w-full animate-pulse rounded-2xl bg-white/10 sm:h-[420px]" />,
-});
 const WeightPlayground = dynamic(() => import("./WeightPlayground").then((m) => m.WeightPlayground), {
   ssr: false,
   loading: () => <div className="h-72 w-full animate-pulse rounded-2xl bg-white/10" />,
@@ -64,38 +58,11 @@ export function LandingPage() {
     <div className="min-h-screen bg-white">
       <LandingNavbar />
 
-      {/* S1 — Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#0B1B3B] to-[#172554] pt-24 text-white">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 lg:grid-cols-2">
-          <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-blue-100">
-              <Sparkles className="h-3.5 w-3.5" /> Franchise Location Intelligence
-            </span>
-            <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-              Berhenti menebak lokasi. <span className="text-cyan-300">Mulai menghitungnya.</span>
-            </h1>
-            <p className="mt-4 max-w-lg text-lg text-blue-100/80">
-              Localyze menganalisis kompetitor, demografi, dan potensi pasar jadi satu skor yang bisa
-              kamu pertanggungjawabkan ke siapa pun.
-            </p>
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <Link
-                href="/register"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-brand-dark shadow-lg transition hover:bg-blue-50"
-              >
-                Coba demo gratis <ArrowRight className="h-4 w-4" />
-              </Link>
-              <a
-                href="#how"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
-              >
-                Lihat cara kerjanya <ChevronDown className="h-4 w-4" />
-              </a>
-            </div>
-          </div>
-          <MiniMap />
-        </div>
-        <div className="border-t border-white/10 bg-black/10">
+      {/* S1 — Hero (L1: static variant; GSAP CinematicHero lands in L2) */}
+      <section className="relative">
+        <CinematicHeroStatic />
+        {/* Trust strip — jembatan hero → S2 */}
+        <div className="border-t border-white/10 bg-[#131F45]">
           <div className="mx-auto grid max-w-3xl grid-cols-3 gap-4 px-4 py-6">
             <CountUpStat value={2300} suffix="+" label="titik grid dianalisis" />
             <CountUpStat value={420} suffix="+" label="kompetitor terpetakan" />
