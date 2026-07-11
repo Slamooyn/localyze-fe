@@ -28,6 +28,7 @@ export function KpiCard({
   label,
   value,
   sub,
+  hint,
   loading = false,
   index = 0,
   children,
@@ -37,6 +38,8 @@ export function KpiCard({
   label: string;
   value?: React.ReactNode;
   sub?: React.ReactNode;
+  /** Native tooltip with extra breakdown (e.g. combined penalty split). */
+  hint?: string;
   loading?: boolean;
   index?: number;
   children?: React.ReactNode;
@@ -46,6 +49,7 @@ export function KpiCard({
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: dur.base, ease: easeOutExpo, delay: Math.min(index, 6) * 0.03 }}
+      title={hint}
       className="rounded-2xl border border-slate-200/70 bg-white p-3.5 shadow-sm"
     >
       <div className="flex items-start gap-3">

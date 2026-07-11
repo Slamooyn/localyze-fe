@@ -85,6 +85,51 @@ export interface AffectedOutlet {
   overlap_pct: number;
 }
 
+// --- Phase 2 Wave 2A: score modifiers (phase2-backend-spec.md §2) ---
+
+export type Hazard = "flood" | "earthquake" | "landslide";
+
+export interface HazardDetail {
+  hazard: Hazard;
+  level: number; // 1..5
+  evidence: string;
+  mitigation: string | null; // filled for level >= 3
+}
+
+export interface DisasterModifier {
+  penalty: number; // 0..10 points subtracted from composite
+  hazards: HazardDetail[];
+  source: string; // e.g. "InaRISK 2025" | "modeled-v1"
+}
+
+export interface SynergyOpportunity {
+  type: string; // anchor/place type, e.g. "office"
+  count: number;
+  nearest_m: number;
+  weight_sum: number;
+  evidence: string;
+  opportunity: string;
+}
+
+export interface SynergyModifier {
+  bonus: number; // 0..max_bonus points added to composite
+  opportunities: SynergyOpportunity[];
+}
+
+/** New in Phase 2 — analyses created before it don't have this block.
+ * Always guard renders with `breakdown.modifiers?.…`. */
+export interface Modifiers {
+  disaster?: DisasterModifier | null;
+  synergy?: SynergyModifier | null;
+}
+
+export interface RegionRisk {
+  hazard: Hazard;
+  level: number;
+  source: string;
+  data_year: number;
+}
+
 export interface Breakdown {
   demand: { score: number; factors: Factor[] };
   competition: {
@@ -93,6 +138,8 @@ export interface Breakdown {
     competitors_in_radius: CompetitorInRadius[];
   };
   cannibalization: { penalty: number; affected_outlets: AffectedOutlet[] };
+  /** Optional — absent on pre-Phase-2 analyses. */
+  modifiers?: Modifiers;
   data_completeness: {
     demographics_available: boolean;
     purchasing_power_modeled: boolean;
@@ -161,6 +208,12 @@ export interface OutletImportReport {
   imported: number;
   skipped: { row: number; reason: string }[];
 }
+
+/** GET /risks/choropleth?hazard=… — district polygons with hazard `level` 1..5. */
+export type RiskChoroplethFC = GeoJSON.FeatureCollection<
+  GeoJSON.Polygon | GeoJSON.MultiPolygon,
+  { level: number } & Record<string, unknown>
+>;
 
 // --- GeoJSON ---
 export interface GeoJSONFeature {

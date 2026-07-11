@@ -27,6 +27,7 @@ import { VerdictBadge } from "@/components/VerdictBadge";
 import { Card } from "@/components/ui/Card";
 import { CompetitorTable } from "./CompetitorTable";
 import { DemographicCard } from "./DemographicCard";
+import { DisasterRiskCard } from "./DisasterRiskCard";
 import { KpiCard } from "./KpiCard";
 import { MapCard } from "./MapCard";
 import { ScoreBreakdownCard } from "./ScoreBreakdownCard";
@@ -152,6 +153,13 @@ export function DashboardView() {
   const density = analysis && factor(analysis, "demand", "population_density");
   const wdensity = analysis && factor(analysis, "competition", "weighted_density");
 
+  // Phase 2: combined penalty KPI — cannibalization + disaster risk. `modifiers`
+  // is optional (old analyses don't have it), so both reads are guarded.
+  const disaster = analysis?.breakdown.modifiers?.disaster ?? null;
+  const cannibalPenalty = s?.cannibalization_penalty ?? 0;
+  const disasterPenalty = disaster?.penalty ?? 0;
+  const totalPenalty = cannibalPenalty + disasterPenalty;
+
   return (
     <div className="p-5">
       <PageHeader
@@ -261,14 +269,17 @@ export function DashboardView() {
         />
         <KpiCard
           icon={AlertTriangle}
-          iconClass={s && s.cannibalization_penalty > 0 ? "bg-avoid/10 text-avoid" : "bg-slate-100 text-slate-500"}
+          iconClass={s && totalPenalty > 0 ? "bg-avoid/10 text-avoid" : "bg-slate-100 text-slate-500"}
           index={5}
-          label="Kanibalisasi"
+          label="Penalti"
           loading={loading}
-          value={
-            s ? (s.cannibalization_penalty > 0 ? `−${s.cannibalization_penalty.toFixed(1)}` : "0") : undefined
+          value={s ? (totalPenalty > 0 ? `−${totalPenalty.toFixed(1)}` : "0") : undefined}
+          sub={s ? (totalPenalty > 0 ? "poin dikurangi" : "Tidak ada") : undefined}
+          hint={
+            s
+              ? `Kanibalisasi −${idNum(cannibalPenalty, 1)} poin · Risiko bencana −${idNum(disasterPenalty, 1)} poin`
+              : undefined
           }
-          sub={s ? (s.cannibalization_penalty > 0 ? "poin dikurangi" : "Tidak ada") : undefined}
         />
       </div>
 
@@ -326,6 +337,13 @@ export function DashboardView() {
               <Phase2Teaser />
             </Card>
           </div>
+        </div>
+      )}
+
+      {/* Phase 2 modifiers row */}
+      {analysis && (
+        <div className="mt-4 grid items-start gap-4 lg:grid-cols-2">
+          <DisasterRiskCard disaster={analysis.breakdown.modifiers?.disaster} />
         </div>
       )}
     </div>

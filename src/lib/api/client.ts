@@ -13,6 +13,7 @@ import type {
   MeResponse,
   OutletImportReport,
   Region,
+  RegionRisk,
 } from "./types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
@@ -84,6 +85,7 @@ export const api = {
     req<Region[]>(`/regions${level ? `?level=${level}` : ""}`),
   demographics: (regionId: number) =>
     req<Demographics>(`/regions/${regionId}/demographics`),
+  regionRisks: (regionId: number) => req<RegionRisk[]>(`/regions/${regionId}/risks`),
   geocode: (q: string) => req<GeocodeResult[]>(`/geocode?q=${encodeURIComponent(q)}`),
   reverseGeocode: (lat: number, lng: number) =>
     req<{ region_id: number; name: string; level: string; address_approx: string }>(

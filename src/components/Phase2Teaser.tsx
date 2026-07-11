@@ -1,7 +1,8 @@
-import { Activity, Footprints, Lock, ShieldAlert } from "lucide-react";
+import { Activity, Footprints, Lock } from "lucide-react";
 
+// "Disaster risk" & "Economic synergy" unlocked in Phase 2 Wave 2A — the rest
+// stays locked until it has real data (phase2-feature-spec.md §4.4).
 const CARDS = [
-  { icon: ShieldAlert, label: "Disaster risk" },
   { icon: Activity, label: "Economic lifecycle" },
   { icon: Footprints, label: "Foot traffic" },
 ];
@@ -12,7 +13,7 @@ export function Phase2Teaser() {
       <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-slate-400">
         Lensa analisis berikutnya
       </p>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {CARDS.map(({ icon: Icon, label }) => (
           <div
             key={label}
