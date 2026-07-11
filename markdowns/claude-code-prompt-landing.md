@@ -1,66 +1,82 @@
-# Prompt Claude Code — Localyze Landing Page (v2)
+# Prompt Claude Code — Localyze Landing Page (v4: Glowy Waves + Dashboard Reveal)
 
 > Copy-paste prompt di bawah ini ke Claude Code dari root repo `localyze-fe`.
-> **Jalankan SETELAH app selesai (M1–M7 prompt frontend)** — landing me-reuse komponen app (ScoreDial, FactorRow, VerdictBadge, KpiCard) dan design tokens.
+> **Jalankan SETELAH app selesai (M1–M7 prompt frontend)** — landing me-reuse komponen app dan design tokens. GSAP TIDAK dipakai lagi (versi cinematic hero lama sudah dibatalkan).
 
 ---
 
 ```
 Kamu adalah frontend engineer + motion designer (gunakan skill UIUXProMax) yang
-membangun landing page Localyze. Ini first impression portfolio — kualitas setara
-landing SaaS modern (referensi rasa: Linear, Resend, Vercel), identitas Localyze
-(navy + pin biru dari logo).
+membangun landing page Localyze. Kualitas setara landing SaaS modern: hero canvas
+hidup, dashboard reveal, lalu section bersih dan tenang ala Emil Kowalski.
 
 ## LANGKAH PERTAMA (WAJIB)
-1. Baca markdowns/landing-page-spec.md (v2) sampai selesai — struktur S1-S6,
-   copywriting, dan aturan performa TIDAK boleh diubah tanpa alasan kuat.
-2. Baca markdowns/design-craft-guidelines.md — motion tokens (src/lib/motion.ts sudah
-   ada dari milestone app, pakai itu), aturan transform/opacity-only, exit 0.8x,
-   reduced-motion. Landing boleh sedikit lebih ekspresif dari app (durasi scroll-driven
-   mengikuti scroll progress), tapi filosofinya sama: halus, cepat, punya alasan.
-3. Inventaris komponen app yang di-reuse: ScoreDial, FactorRow, VerdictBadge,
-   KpiCard, tokens Tailwind. Landing WAJIB reuse, bukan membuat tiruan.
-4. Logo: public/logo-localyze.png (sudah ada dari milestone app; sumber asli
-   src/app/image copy.png). Navbar, footer, OG image pakai file ini.
+1. Baca markdowns/landing-page-spec.md (v3) sampai selesai — struktur S1-S7,
+   catatan adaptasi, copywriting, aturan performa.
+2. Baca markdowns/design-craft-guidelines.md — berlaku untuk semua section.
+3. Buka dua komponen referensi (keduanya berisi catatan adaptasi inline):
+   - markdowns/reference/glowy-waves-hero-reference.tsx
+   - markdowns/reference/container-scroll-reference.tsx
+   (markdowns/reference/cinematic-hero-reference.tsx = ARSIP, jangan dipakai.)
+4. Inventaris komponen app yang di-reuse: ScoreDial, FactorRow, VerdictBadge, KpiCard.
+5. Logo: public/logo-localyze.png.
 
 ## ATURAN KERAS
-- Landing 100% hidup tanpa backend: data dari src/landing/sample-locations.json.
-- CTA primer SELALU → /register; tombol "Masuk" → /login. Ganti / redirect
-  sementara (dari milestone app) dengan halaman landing ini.
-- Framer Motion untuk semua animasi; tiap animasi punya varian reduced-motion.
-- Tanpa Three.js, video, carousel lib, KaTeX. LCP < 2.5s. Widget berat
-  (MiniMap, mockup S3, WeightPlayground) via next/dynamic ssr:false + placeholder.
-- Copywriting pakai draft spec §6 (Bahasa Indonesia).
+- Landing 100% hidup tanpa backend (src/landing/sample-locations.json).
+- CTA primer SELALU → /register; "Masuk" → /login. Ganti / redirect sementara
+  dengan halaman landing ini.
+- Tanpa GSAP, Three.js, video, carousel lib, KaTeX, dan TANPA shadcn CLI —
+  komponen referensi memakai Button shadcn: ganti dengan komponen Button milik
+  sendiri (varian solid & outline, rounded-full).
+- Framer Motion + motion tokens untuk semua animasi; reduced-motion di tiap section.
+- Copywriting pakai spec §6.
 
 ## URUTAN PENGERJAAN (commit per milestone)
-L1. Halaman utuh statis: LandingNavbar (transparan→solid, tombol Masuk + Coba demo)
-    + Hero S1 (headline, CTA → /register, layout 2 kolom, placeholder MiniMap)
-    + S2 What you get (6 BenefitCard, badge Core/Pro insight) + shell S3-S6 dengan
-    copywriting final + FaqAccordion + footer. Rapi & responsive dulu, interaktif belum.
-L2. Hero interaktif: MiniMap (MapLibre, gestures off, 3 titik berdenyut, klik →
-    pin + radius rings + ScoreDialMini count-up + verdict) + CountUpStat trust strip
-    (trigger inview) + hover micro-visual BenefitCard S2.
-L3. S3 Tutorial sneak peek (scrollytelling product tour): teks step sticky kiri,
-    kanan mockup dashboard HIDUP dalam BrowserFrame — 4 fase sesuai spec (pilih
-    kategori & titik → KPI + dial + FactorRow terisi → Discovery heatmap + top-10 →
-    compare battle + verdict stamp). Gunakan komponen app asli dengan data sample.
-    Fallback reduced-motion: stepper 4 tab.
-L4. S4 Metodologi & Rumus: FormulaHero (Score = w_D·Demand + w_C·Competition − P,
-    hover term → tooltip penjelasan) + 3 kartu micro-viz (DecayCurve animasi
-    e^(-d/τ), PercentileHisto, verdict band + confidence) + WeightPlayground
-    (3 slider → scoring-mini.ts pure function → dial + verdict real-time; unit test
-    scoring-mini). Lalu audit akhir: Lighthouse (Perf ≥90, A11y ≥95, SEO ≥95),
-    keyboard nav, reduced-motion, meta OG + favicon.
+L1. Fondasi + section statis: LandingNavbar (fixed, transparan→solid) + Button
+    sendiri + definisikan CSS vars canvas di globals.css (--background --muted
+    --primary --accent --secondary --foreground → palet Localyze, lihat spec §3)
+    + S3 What you get (6 BenefitCard) + S6 persona + S7 CTA final + FaqAccordion
+    + footer + shell S2/S4/S5 dengan copywriting final. Responsive & rapi.
+L2. INTEGRASI DUA KOMPONEN REFERENSI:
+    a. Salin glowy-waves-hero-reference.tsx → src/components/landing/glowy-waves-hero.tsx,
+       adaptasi sesuai spec §S1: badge MapPin "Franchise location intelligence",
+       headline + span gradient, subhead, CTA → /register & /login (Button sendiri),
+       pills & stats Localyze. Perbaikan wajib: reduced-motion → render satu frame
+       lalu stop RAF; pause RAF saat tab hidden (visibilitychange) dan saat hero
+       keluar viewport (IntersectionObserver).
+    b. Salin container-scroll-reference.tsx → src/components/landing/container-scroll.tsx,
+       adaptasi sesuai spec §S2: title "Seperti ini dashboard-nya.", isi kartu
+       next/image public/screenshots/dashboard.png (placeholder navy + logo bila
+       file belum ada), warna kartu navy brand (#0B1B3B bg, #172554 border),
+       reduced-motion → kartu tegak statis, pangkas tinggi section bila ada
+       scroll kosong.
+    c. Rakit halaman /: Navbar → S1 hero → S2 reveal → S3 → shell S4/S5 → S6 → S7.
+       Pastikan transisi hero→reveal mulus (tanpa gap putih aneh antar canvas
+       dan section berikutnya).
+L3. S4 Tutorial sneak peek (scrollytelling Framer): teks sticky kiri, mockup
+    dashboard hidup dalam BrowserFrame kanan, 4 fase sesuai spec; fallback stepper
+    untuk reduced-motion. + scroll reveal & hover micro-visual S3.
+L4. S5 Metodologi & Rumus: FormulaHero (hover term → tooltip) + DecayCurve +
+    PercentileHisto + verdict band + WeightPlayground (scoring-mini.ts pure +
+    unit test). Lalu audit akhir: Lighthouse mobile & desktop (Perf ≥90, A11y ≥95,
+    SEO ≥95), keyboard nav, reduced-motion penuh, meta OG + favicon, cek RAF
+    canvas berhenti saat navigasi keluar / (tidak ada memory leak).
 
 ## ACCEPTANCE (alur review manual)
 1. Backend MATI → buka / → semua section hidup, tanpa error console.
-2. Klik titik MiniMap → pin, ring, count-up, verdict <1 dtk.
-3. Scroll S3 pelan → 4 fase tour runtut; reduced-motion → stepper.
-4. Hover term rumus S4 → tooltip; geser slider → skor & verdict berubah masuk akal
-   (bobot kompetisi naik di lokasi padat → skor turun).
+2. Hero: waves bergerak halus & bereaksi ke mouse; headline stagger-in; stats grid
+   tampil. Pindah tab lalu kembali → animasi tidak menumpuk/lompat.
+3. Scroll ke S2 → kartu dashboard menegak dari 20° dengan mulus; screenshot/
+   placeholder tajam, tidak gepeng.
+4. Aktifkan reduced-motion → hero jadi frame statis, kartu S2 tegak, S4 jadi
+   stepper — semua konten tetap terbaca & CTA berfungsi.
 5. Klik "Coba demo gratis" → /register; setelah daftar → /app auto-analyze Tebet.
-   Klik "Masuk" → /login → akun demo → dashboard terisi.
-6. Lighthouse mobile: Performance ≥ 90, Accessibility ≥ 95, SEO ≥ 95.
+6. S5: hover term rumus → tooltip; geser slider → skor & verdict berubah masuk akal.
+7. Lighthouse mobile: Performance ≥ 90, Accessibility ≥ 95, SEO ≥ 95.
+
+CATATAN PASCA-BUILD: setelah app + landing jadi, ambil screenshot /app (akun demo,
+analisis Tebet terisi) → simpan public/screenshots/dashboard.png → cek S2 memakai
+screenshot asli, bukan placeholder.
 
 Kerjakan L1 sekarang. Setelah tiap milestone: screenshot + ringkasan sebelum lanjut.
 ```

@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 
 import "./globals.css";
+
+// Self-hosted via next/font: no render-blocking stylesheet request,
+// swap display, and the same --font-inter var tailwind already maps to.
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
 
 export const metadata: Metadata = {
   title: "Localyze — Franchise Location Intelligence",
@@ -10,16 +19,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id">
-      <head>
-        {/* Inter loaded at runtime (non-blocking); degrades to system-ui offline. */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="id" className={inter.variable}>
       <body className="font-sans">{children}</body>
     </html>
   );

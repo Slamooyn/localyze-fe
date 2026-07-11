@@ -34,7 +34,7 @@ Satu app Next.js untuk **dua kebutuhan sekaligus**: landing page marketing (`/`)
 | Tiles | OSM raster / style demo MapLibre | tanpa key |
 | Data fetching | TanStack Query | cache per koordinat, retry, loading states |
 | Client state | Zustand (+ persist) | compare tray, kategori aktif, layer toggles |
-| Animasi | **Framer Motion** | dipakai berat di landing (scroll-driven), ringan di app (transisi panel) |
+| Animasi | **Framer Motion** | semua animasi landing (hero canvas via RAF sendiri, ContainerScroll via useScroll) & app; TANPA GSAP |
 | Angka animasi | CountUp kecil buatan sendiri / `animate` Framer | untuk stat counters landing |
 | Ikon | lucide-react | |
 | Font | Inter (next/font) | tabular-nums untuk skor |

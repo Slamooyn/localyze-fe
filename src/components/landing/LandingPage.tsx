@@ -97,12 +97,12 @@ export function LandingPage({ hasScreenshot = false }: { hasScreenshot?: boolean
         </div>
       </section>
 
-      {/* S3 — Product tour */}
+      {/* S4 — Product tour */}
       <div className="bg-slate-50">
         <HowItWorks />
       </div>
 
-      {/* S4 — Methodology */}
+      {/* S5 — Methodology */}
       <section id="method" className="bg-gradient-to-b from-[#0B1B3B] to-[#172554] py-20 text-white">
         <div className="mx-auto max-w-5xl px-4">
           <motion.div {...reveal} className="text-center">
@@ -119,13 +119,13 @@ export function LandingPage({ hasScreenshot = false }: { hasScreenshot?: boolean
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             <MethodCard title="Distance decay" formula="bobot = e^(−d/τ)">
               <DecayCurve />
-              <p className="mt-2 text-xs text-blue-100/70">
+              <p className="mt-2 text-xs text-slate-500">
                 Kami tidak menghitung kompetitor. Kami menghitung tekanan kompetitif.
               </p>
             </MethodCard>
             <MethodCard title="Normalisasi persentil">
               <PercentileHisto />
-              <p className="mt-2 text-xs text-blue-100/70">
+              <p className="mt-2 text-xs text-slate-500">
                 8 kompetitor itu sepi di Sudirman, jenuh di area residensial — semua dibandingkan dengan distribusi kotanya.
               </p>
             </MethodCard>
@@ -136,7 +136,7 @@ export function LandingPage({ hasScreenshot = false }: { hasScreenshot?: boolean
                 <VerdictBadge verdict="conditional" size="sm" />
                 <VerdictBadge verdict="avoid" size="sm" />
               </div>
-              <p className="mt-2 text-xs text-blue-100/70">
+              <p className="mt-2 text-xs text-slate-500">
                 72 vs 74 itu noise. Kami kasih verdict, bukan presisi palsu — plus tingkat keyakinan data.
               </p>
             </MethodCard>
@@ -155,7 +155,7 @@ export function LandingPage({ hasScreenshot = false }: { hasScreenshot?: boolean
         </div>
       </section>
 
-      {/* S5 — Personas */}
+      {/* S6 — Personas */}
       <section className="mx-auto max-w-5xl px-4 py-20">
         <motion.h2 {...reveal} className="text-center text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
           Dibuat untuk yang memutuskan.
@@ -178,7 +178,7 @@ export function LandingPage({ hasScreenshot = false }: { hasScreenshot?: boolean
         </div>
       </section>
 
-      {/* S6 — CTA + FAQ + footer */}
+      {/* S7 — CTA + FAQ + footer */}
       <section className="bg-gradient-to-b from-[#172554] to-[#0B1B3B] py-20 text-white">
         <div className="mx-auto max-w-3xl px-4 text-center">
           <TrendingUp className="mx-auto mb-3 h-8 w-8 text-cyan-300" />

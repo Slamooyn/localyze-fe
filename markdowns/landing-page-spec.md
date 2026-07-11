@@ -1,108 +1,105 @@
-# Localyze — Landing Page Spec v2 (Interaktif)
+# Localyze — Landing Page Spec v3 (Glowy Waves + Dashboard Reveal)
 
-> **Status:** MVP spec v2 · **Updated:** 2026-07-09 · **Owner:** Moym
-> **Route:** `/` (SSG) · CTA → `/register` (auth wajib sebelum masuk dashboard `/app`)
-> **Stack:** Next.js + Tailwind + Framer Motion + MapLibre
-> **Perubahan dari v1:** struktur baru (What you get + Tutorial sneak peek), section **Metodologi & Rumus** untuk kredibilitas, CTA sekarang menuju register/login (bukan langsung app), logo resmi `public/logo-localyze.png` (dari `src/app/image copy.png`).
+> **Status:** MVP spec v3 · **Updated:** 2026-07-09 · **Owner:** Moym
+> **Route:** `/` (SSG) · CTA → `/register` · Stack: Next.js + Tailwind + Framer Motion (tanpa GSAP)
+> **Perubahan dari v2:** CinematicHero (GSAP) DIHAPUS — diganti **GlowyWavesHero** (canvas waves reaktif mouse) + **ContainerScroll** (dashboard reveal). Landing jadi lebih ringan: tanpa pinning panjang, tanpa GSAP.
+> Komponen referensi: `markdowns/reference/glowy-waves-hero-reference.tsx` dan `markdowns/reference/container-scroll-reference.tsx` (keduanya berisi catatan adaptasi inline).
 
 ---
 
 ## 1. Tujuan & Alur
 
-Landing menjawab 4 pertanyaan berurutan sambil scroll: *apa ini → apa yang saya dapat → seperti apa produknya → kenapa saya harus percaya angkanya* — lalu satu ajakan: daftar & coba demo.
+Landing menjawab berurutan: *apa ini → seperti apa produknya → apa yang saya dapat → bagaimana cara pakainya → kenapa angkanya bisa dipercaya* → daftar.
 
 ```
-/  →  CTA "Coba demo gratis"  →  /register  (link "Sudah punya akun? Masuk" → /login)
+/  →  CTA "Coba demo gratis"  →  /register  ("Sudah punya akun? Masuk" → /login)
    →  sukses  →  /app?lat=-6.2264&lng=106.8531&category=coffee-grab-go&analyze=1
 ```
 
 ## 2. Prinsip
 
-1. **Show, don't tell** — klaim didemokan lewat widget interaktif, bukan screenshot mati.
-2. **Interaktif ≠ berat** — semua widget client-side dengan data sample di-embed (`src/landing/sample-locations.json`). Landing hidup 100% tanpa backend.
-3. **Satu CTA** — semua tombol primer menuju `/register`.
-4. **Motion bermakna** + hormati `prefers-reduced-motion` (fallback stepper statis).
-5. **Aturan keras:** tanpa Three.js/video/carousel lib; LCP < 2.5s; widget berat lazy (`next/dynamic ssr:false`).
+1. **Show, don't tell** — hero canvas hidup, dashboard reveal pakai tampilan asli, rumus ditampilkan terbuka.
+2. **Interaktif ≠ berat** — 100% hidup tanpa backend (`src/landing/sample-locations.json`); tanpa GSAP/Three.js/video/carousel lib; LCP < 2.5s; widget berat lazy.
+3. **Satu CTA** — semua tombol primer → `/register`.
+4. **Motion mengikuti design-craft-guidelines.md** (Framer Motion + motion tokens); `prefers-reduced-motion` dihormati di setiap section.
+5. Ritme visual: hero terang dengan waves biru → reveal card navy → section terang/slate berselang → CTA final navy.
 
 ## 3. Identitas Visual
 
 ```
-Hero & CTA-final bg : navy #0B1B3B → #172554 (gradasi hanya di sini)
-Aksen               : blue-600 #2563EB · cyan-400 #22D3EE (glow pin, indikator)
-Verdict colors      : sama dengan app (konsistensi produk)
-Section terang      : white / slate-50 berselang-seling — ritme scroll jelas
-Font                : Inter; headline semibold tracking-tight; skor tabular-nums
-Logo                : public/logo-localyze.png (background putih → di navy pakai
-                      container putih rounded-xl; favicon & OG dari file yang sama)
+Palet     : primary #1D4ED8 · primary-bright #2563EB · accent-cyan #22D3EE
+            navy #0B1B3B–#172554 (card reveal & CTA final) · verdict colors = app
+CSS vars  : definisikan shadcn-style vars di globals.css KHUSUS untuk kebutuhan
+            canvas hero — --background (white), --muted (slate-100),
+            --primary (#1D4ED8), --accent (#22D3EE), --secondary (#0D9488),
+            --foreground (slate-900). Canvas membaca vars ini saat menggambar waves.
+Font      : Inter; headline semibold tracking-tight; skor tabular-nums
+Logo      : public/logo-localyze.png (navbar, footer, favicon, OG)
 ```
 
 ## 4. Struktur Halaman
 
-### S1 — Hero (interaktif)
-- Navbar: logo + "Cara kerja · Fitur · Metodologi" (anchor) + tombol "Masuk" (`/login`) + "Coba demo" (`/register`). Transparan di atas → solid saat scroll.
-- Kiri: headline **"Berhenti menebak lokasi. Mulai menghitungnya."** + subhead + CTA primer "Coba demo gratis →" (`/register`) + secondary "Lihat cara kerjanya ↓".
-- Kanan: **MiniMap interaktif** — peta Jaksel kecil, 3 titik kandidat berdenyut; klik → pin jatuh, radius ring mekar, ScoreDial mini count-up + verdict badge. Produk didemokan dalam 10 detik, sebelum register.
-- Trust strip: 3 stat count-up — "2.300+ titik grid dianalisis · 400+ kompetitor terpetakan · 3 kategori franchise".
+### S1 — Hero: GlowyWavesHero (adaptasi)
+Basis: `reference/glowy-waves-hero-reference.tsx` — canvas fullscreen dengan 5 garis gelombang glowing (warna dari CSS vars brand) yang bereaksi terhadap mouse, konten center stagger-in Framer Motion.
 
-### S2 — What you get (grid benefit, scroll reveal)
-Headline: "Satu dashboard, semua yang kamu butuhkan sebelum tanda tangan sewa."
-6 kartu (ikon + judul + 1 kalimat + micro-visual hover):
-1. **Localyze Score** — skor 0–100 yang bisa dipertanggungjawabkan, bukan feeling.
-2. **Peta kompetitor radius 1/2/5 km** — tekanan kompetitif berbobot jarak.
-3. **Profil demografi area** — kepadatan, usia, daya beli per kelurahan.
-4. **Location Discovery** — "tunjukkan 10 titik terbaik di kecamatan ini."
-5. **Perbandingan lokasi** — Tebet vs BSD, faktor per faktor.
-6. **Cannibalization guard** — pastikan cabang baru tidak memakan cabang lama.
-Kartu 1–3 badge "Core", 4–6 badge "Pro insight". Hover: tilt halus + ikon animasi.
+Adaptasi konten (WAJIB):
+- Badge pill atas: ikon `MapPin` (bukan Sparkles) + "Franchise location intelligence".
+- Headline: "Berhenti menebak lokasi. " + span gradient "Mulai menghitungnya." (gradient from-primary via-primary/60 to-foreground/80 — sudah ada di komponen).
+- Subhead: "Localyze menganalisis kompetitor, demografi, dan potensi pasar di titik mana pun — jadi satu skor yang bisa kamu pertanggungjawabkan."
+- CTA primer (Button solid rounded-full): "Coba demo gratis →" → `/register`; CTA outline: "Masuk" → `/login`. **Button shadcn DIGANTI** komponen Button milik sendiri dengan styling setara (project bukan shadcn).
+- `highlightPills` → "Skor explainable" · "Snapshot Jakarta Selatan" · "Tanpa kartu kredit".
+- `heroStats` (grid 3 kolom bawah, ini trust strip-nya) → "2.300+ / Titik grid dianalisis" · "400+ / Kompetitor terpetakan" · "<1 dtk / Waktu ke insight".
+- Reduced motion: gambar satu frame waves statis lalu hentikan RAF (perbaikan dari komponen asli yang tetap looping).
+- Navbar landing fixed di atas hero (transparan → solid saat scroll).
 
-### S3 — Tutorial sneak peek (scrollytelling product tour)
-Headline: "Seperti ini rasanya memakai Localyze."
-Scrollytelling 4 langkah — teks step sticky kiri, kanan **mockup dashboard hidup** (komponen app asli di-render dengan data sample, dibungkus frame browser chrome tipis — BUKAN screenshot):
-1. **Pilih kategori & titik** — kursor animasi memilih "Kopi Grab-and-Go", klik peta, pin + rings muncul.
-2. **Baca dashboard-nya** — KPI cards terisi count-up, ScoreDial mengisi 0→72, FactorRow muncul berurutan dengan contribution badge (+12.9 / −10.4).
-3. **Temukan titik terbaik** — panel berganti ke Discovery: heatmap menyala + Top-10 list slide-in.
-4. **Bandingkan & putuskan** — dua kolom skor, faktor pemenang di-highlight, verdict final stamp.
-Fallback reduced-motion: stepper 4 tab manual. Di akhir: CTA sekunder "Daftar & jalankan analisis pertamamu →".
+### S2 — Dashboard reveal: ContainerScroll (adaptasi)
+Basis: `reference/container-scroll-reference.tsx` — kartu besar miring 20° yang menegak + membesar mengikuti scroll (aha moment "ini produknya").
 
-### S4 — Metodologi & Rumus ("Kenapa kamu bisa percaya angkanya")
-Bagian kredibilitas — tampilkan rumus asli, bukan jargon:
+- `titleComponent`: "Seperti ini dashboard-nya." (h2) + satu kalimat kecil "Peta, skor, dan bukti — dalam satu layar."
+- Isi kartu: **screenshot dashboard asli** `public/screenshots/dashboard.png` via next/image (diambil dari `/app` akun demo setelah app jadi; sementara belum ada → placeholder navy + logo + teks "Dashboard preview").
+- Ganti warna hardware kartu: border `#172554`, bg `#0B1B3B` (navy brand, bukan abu #6C6C6C/#222222).
+- Reduced motion: kartu tampil tegak statis (tanpa rotasi).
+- Tinggi section dipangkas dari referensi bila terasa terlalu panjang (60rem mobile / 80rem desktop boleh diturunkan sampai terasa pas — jangan ada scroll kosong).
 
-- **Formula utama** (render besar, styled HTML/SVG — tanpa lib KaTeX):
-  `Score = w_D · Demand + w_C · Competition − P_kanibalisasi`
-  Hover/tap tiap term → highlight + tooltip penjelasan satu kalimat (`w_D` = bobot sesuai kategori franchise-mu, dst).
-- **Tiga kartu penjelasan** dengan micro-viz animasi:
-  1. *Distance decay* — `bobot = e^(−d/τ)` + grafik kurva kecil animasi: kompetitor 200 m ≈ 0.72, di 2 km ≈ 0.04. Copy: "Kami tidak menghitung kompetitor. Kami menghitung tekanan kompetitif."
-  2. *Normalisasi persentil* — mini histogram: "8 kompetitor itu sepi di Sudirman, jenuh di area residensial — semua angka dibandingkan dengan distribusi kotanya."
-  3. *Verdict band + confidence* — "72 vs 74 itu noise. Kami kasih verdict, bukan presisi palsu — plus tingkat keyakinan data."
-- **WeightPlayground** (interaktif, jantung section ini): 3 slider (bobot Demand↔Kompetisi, τ jarak, penalti kanibalisasi) → skor & verdict sample dihitung ulang real-time client-side (`src/landing/scoring-mini.ts`, port murni formula). Intro copy: "Tidak percaya skornya? Bagus. Geser sendiri bobotnya."
-- Baris transparansi (kecil, jujur): "Data demo: snapshot Jakarta Selatan · demografi BPS + modeled · metodologi terbuka."
+### S3 — What you get
+"Satu dashboard, semua yang kamu butuhkan sebelum tanda tangan sewa." — 6 BenefitCard (hover micro-visual): Localyze Score, Peta kompetitor 1/2/5 km, Profil demografi, Location Discovery, Perbandingan lokasi, Cannibalization guard. Badge "Core" (1–3) / "Pro insight" (4–6).
 
-### S5 — Untuk siapa
-3 kartu persona: Franchise HQ · Business development · Investor — satu kalimat use case masing-masing.
+### S4 — Tutorial sneak peek (scrollytelling)
+"Seperti ini rasanya memakai Localyze." — teks step sticky kiri, kanan mockup dashboard hidup dalam `BrowserFrame` (komponen app asli + data sample), 4 fase: (1) pilih kategori & titik → pin + rings; (2) KPI cards + ScoreDial 0→72 + FactorRow muncul berurutan; (3) Discovery: heatmap + Top-10; (4) Compare: dua kolom, faktor pemenang di-highlight, verdict stamp. Fallback reduced-motion: stepper 4 tab. CTA sekunder di akhir.
 
-### S6 — CTA final + FAQ mini
-Bg navy: headline "Lokasi berikutnya, dihitung." + tombol "Coba demo gratis" (`/register`) + ghost "Masuk" (`/login`). FAQ accordion 4 item: Apakah gratis? (ya, demo build) · Data dari mana? · Kota apa saja? (pilot Jaksel) · Apakah skor bisa dipercaya? (link scroll balik ke S4).
-Footer: logo, "Dibuat oleh Moym", GitHub/LinkedIn.
+### S5 — Metodologi & Rumus ("Skor kami bukan black box. Ini rumusnya.")
+- `FormulaHero`: `Score = w_D · Demand + w_C · Competition − P_kanibalisasi` — hover/tap term → tooltip penjelasan.
+- 3 kartu micro-viz: DecayCurve (`bobot = e^(−d/τ)`, kurva animasi, "kami menghitung tekanan kompetitif, bukan jumlah kompetitor"), PercentileHisto (normalisasi vs distribusi kota), Verdict band + confidence ("72 vs 74 itu noise").
+- `WeightPlayground`: 3 slider (bobot Demand↔Kompetisi, τ, penalti kanibalisasi) → skor & verdict sample dihitung ulang real-time via `src/landing/scoring-mini.ts` (pure, unit-tested). Intro: "Tidak percaya skornya? Bagus. Geser sendiri bobotnya."
+- Baris transparansi: "Data demo: snapshot Jakarta Selatan · demografi BPS + modeled · metodologi terbuka."
+
+### S6 — Untuk siapa
+3 PersonaCard: Franchise HQ · Business development · Investor — satu kalimat use case.
+
+### S7 — CTA final + FAQ
+Bg navy: "Lokasi berikutnya, dihitung." + "Coba demo gratis" (`/register`) + ghost "Masuk". FaqAccordion 4 item (gratis? · data dari mana? · kota apa saja? · skor bisa dipercaya? → link ke S5). Footer: logo, "Dibuat oleh Moym", GitHub/LinkedIn.
 
 ## 5. Komponen
 
-`LandingNavbar` · `MiniMap` · `ScoreDialMini` · `CountUpStat` · `BenefitCard` · `ScrollStep` (scrollytelling) · `BrowserFrame` (chrome tipis pembungkus mockup) · `FormulaHero` (rumus + hover terms) · `DecayCurve` · `PercentileHisto` · `WeightPlayground` · `PersonaCard` · `FaqAccordion`
-Data & logic: `src/landing/sample-locations.json` · `src/landing/scoring-mini.ts` (pure, unit-tested)
-Reuse dari app: `ScoreDial`, `FactorRow`, `VerdictBadge`, `KpiCard` (dipakai di S3 mockup — WAJIB reuse, bukan tiruan).
+`LandingNavbar` · `GlowyWavesHero` (adaptasi referensi) · `ContainerScroll` + `DashboardRevealCard` (adaptasi referensi) · `Button` (sendiri, varian solid/outline rounded-full) · `CountUpStat` · `BenefitCard` · `ScrollStep` · `BrowserFrame` · `FormulaHero` · `DecayCurve` · `PercentileHisto` · `WeightPlayground` · `PersonaCard` · `FaqAccordion`
+Data & logic: `src/landing/sample-locations.json` · `src/landing/scoring-mini.ts`
+Reuse dari app: `ScoreDial`, `FactorRow`, `VerdictBadge`, `KpiCard` (S4) — WAJIB reuse, bukan tiruan.
+Asset: `public/screenshots/dashboard.png` (S2).
 
-## 6. Copywriting (draft final, Bahasa Indonesia)
+## 6. Copywriting (final, Bahasa Indonesia)
 
-- Headline: "Berhenti menebak lokasi. Mulai menghitungnya."
-- Subhead: "Localyze menganalisis kompetitor, demografi, dan potensi pasar jadi satu skor yang bisa kamu pertanggungjawabkan ke siapa pun."
-- S2 intro: "Satu dashboard, semua yang kamu butuhkan sebelum tanda tangan sewa."
-- S3 intro: "Seperti ini rasanya memakai Localyze."
-- S4 intro: "Skor kami bukan black box. Ini rumusnya."
+- Headline: "Berhenti menebak lokasi. **Mulai menghitungnya.**" (span gradient)
+- Subhead: lihat S1 di atas.
+- S2: "Seperti ini dashboard-nya." / "Peta, skor, dan bukti — dalam satu layar."
+- S3 intro: "Satu dashboard, semua yang kamu butuhkan sebelum tanda tangan sewa."
+- S4 intro: "Seperti ini rasanya memakai Localyze."
+- S5 intro: "Skor kami bukan black box. Ini rumusnya."
 - CTA: "Coba demo gratis — cukup daftar, tanpa kartu kredit."
 
 ## 7. Performa & Aksesibilitas
 
-- SSG semua section; hanya widget interaktif yang client component + lazy.
-- MiniMap & mockup S3: placeholder blur sebelum siap; IntersectionObserver untuk trigger animasi.
-- `prefers-reduced-motion`: scrollytelling → stepper, count-up → angka langsung.
-- Keyboard: semua interaksi bisa tab/enter; kontras navy AA; formula punya penjelasan teks (bukan hanya hover).
-- Target Lighthouse mobile: Performance ≥ 90 · Accessibility ≥ 95 · SEO ≥ 95 (meta OG + title/desc).
+- Canvas hero: RAF loop pause saat tab hidden (`visibilitychange`) & saat hero keluar viewport (IntersectionObserver); reduced-motion → satu frame statis.
+- SSG semua section; hero canvas & widget interaktif client + `next/dynamic ssr:false` dengan placeholder (headline tetap server-rendered untuk LCP).
+- Screenshot S2 pakai `next/image` dengan `sizes` benar; prioritas rendah (below fold).
+- Keyboard-navigable semua; kontras AA; formula punya penjelasan teks permanen (bukan hanya hover).
+- Target Lighthouse mobile: Performance ≥ 90 · Accessibility ≥ 95 · SEO ≥ 95.
