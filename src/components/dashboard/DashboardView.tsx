@@ -31,6 +31,7 @@ import { DisasterRiskCard } from "./DisasterRiskCard";
 import { KpiCard } from "./KpiCard";
 import { MapCard } from "./MapCard";
 import { ScoreBreakdownCard } from "./ScoreBreakdownCard";
+import { SynergyCard } from "./SynergyCard";
 
 const EXAMPLES = [
   { label: "Tebet", lat: -6.2264, lng: 106.8531 },
@@ -344,6 +345,7 @@ export function DashboardView() {
       {analysis && (
         <div className="mt-4 grid items-start gap-4 lg:grid-cols-2">
           <DisasterRiskCard disaster={analysis.breakdown.modifiers?.disaster} />
+          <SynergyCard synergy={analysis.breakdown.modifiers?.synergy} />
         </div>
       )}
     </div>
