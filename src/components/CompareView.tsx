@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Lock, Scale, Trophy } from "lucide-react";
+import { Loader2, Scale, Trophy } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/api/client";
 import type { Analysis } from "@/lib/api/types";
 import { signed } from "@/lib/format";
+import { MemoLabelSwap, useMemoExport } from "@/components/ExportMemo";
 import { useAppStore } from "@/lib/store";
 import { VERDICT_HEX } from "@/lib/verdict";
 import { PageHeader } from "@/components/shell/PageHeader";
@@ -142,17 +143,28 @@ export function CompareView() {
         </div>
 
         <div className="mt-6">
-          <button
-            disabled
-            title="Segera hadir — export memo PDF"
-            className="flex items-center gap-1.5 rounded-lg border border-dashed border-slate-300 px-3 py-1.5 text-sm text-slate-400"
-          >
-            <Lock className="h-3.5 w-3.5" />
-            Jadikan keputusan (export memo)
-          </button>
+          <ExportMemoButton ids={analyses.map((a) => a.id)} />
         </div>
       </Card>
     </div>
+  );
+}
+
+/** Phase 2 F4: comparison memo PDF via POST /analyses/compare/memo. */
+function ExportMemoButton({ ids }: { ids: string[] }) {
+  const { busy, run } = useMemoExport(
+    () => api.compareMemo(ids),
+    "localyze-memo-perbandingan.pdf",
+  );
+  return (
+    <button
+      onClick={run}
+      disabled={busy}
+      aria-busy={busy}
+      className="rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-white transition enabled:hover:bg-brand-bright disabled:opacity-70"
+    >
+      <MemoLabelSwap busy={busy} label="Export memo (PDF)" />
+    </button>
   );
 }
 

@@ -30,7 +30,7 @@ export class ApiError extends Error {
   }
 }
 
-async function req<T>(path: string, init?: RequestInit): Promise<T> {
+async function doFetch(path: string, init?: RequestInit): Promise<Response> {
   const token = useAppStore.getState().token;
   const res = await fetch(`${BASE}${path}`, {
     ...init,
@@ -65,8 +65,40 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
     }
     throw new ApiError(res.status, code, message);
   }
+  return res;
+}
+
+async function req<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await doFetch(path, init);
   if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
+}
+
+function filenameFromDisposition(cd: string | null): string | null {
+  if (!cd) return null;
+  const star = /filename\*\s*=\s*(?:UTF-8'')?([^;]+)/i.exec(cd);
+  if (star) {
+    try {
+      return decodeURIComponent(star[1].trim().replace(/^"|"$/g, ""));
+    } catch {
+      /* fall through */
+    }
+  }
+  const plain = /filename\s*=\s*"?([^";]+)"?/i.exec(cd);
+  return plain ? plain[1].trim() : null;
+}
+
+/** Binary responses (memo PDF). Filename comes from Content-Disposition when
+ * the backend exposes it; callers provide a fallback. */
+async function reqBlob(
+  path: string,
+  init?: RequestInit,
+): Promise<{ blob: Blob; filename: string | null }> {
+  const res = await doFetch(path, init);
+  return {
+    blob: await res.blob(),
+    filename: filenameFromDisposition(res.headers.get("content-disposition")),
+  };
 }
 
 export const api = {
@@ -124,6 +156,9 @@ export const api = {
     req<void>(`/analyses/${id}`, { method: "DELETE" }),
   compare: (ids: string[]) =>
     req<CompareResponse>(`/analyses/compare?ids=${ids.join(",")}`),
+  analysisMemo: (id: string) => reqBlob(`/analyses/${id}/memo`, { method: "POST" }),
+  compareMemo: (ids: string[]) =>
+    reqBlob(`/analyses/compare/memo?ids=${ids.join(",")}`, { method: "POST" }),
   discovery: (categorySlug: string, regionId: number, limit = 10) =>
     req<DiscoveryResponse>(
       `/discovery?category_slug=${categorySlug}&region_id=${regionId}&limit=${limit}`,

@@ -25,6 +25,7 @@ import { CannibalizationCard } from "@/components/CannibalizationCard";
 import { Phase2Teaser } from "@/components/Phase2Teaser";
 import { VerdictBadge } from "@/components/VerdictBadge";
 import { Card } from "@/components/ui/Card";
+import { AnalysisActionsMenu } from "./AnalysisActionsMenu";
 import { CompetitorTable } from "./CompetitorTable";
 import { DemographicCard } from "./DemographicCard";
 import { DisasterRiskCard } from "./DisasterRiskCard";
@@ -217,6 +218,7 @@ export function DashboardView() {
               >
                 <Plus className="h-4 w-4" /> {inCompare ? "Di tray" : "Bandingkan"}
               </button>
+              <AnalysisActionsMenu analysisId={analysis.id} analysisName={analysis.name} />
             </>
           )
         }
