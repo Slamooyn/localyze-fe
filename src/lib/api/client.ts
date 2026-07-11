@@ -10,10 +10,12 @@ import type {
   DiscoveryResponse,
   GeocodeResult,
   GeoJSONFC,
+  Hazard,
   MeResponse,
   OutletImportReport,
   Region,
   RegionRisk,
+  RiskChoroplethFC,
 } from "./types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
@@ -86,6 +88,8 @@ export const api = {
   demographics: (regionId: number) =>
     req<Demographics>(`/regions/${regionId}/demographics`),
   regionRisks: (regionId: number) => req<RegionRisk[]>(`/regions/${regionId}/risks`),
+  riskChoropleth: (hazard: Hazard) =>
+    req<RiskChoroplethFC>(`/risks/choropleth?hazard=${hazard}`),
   geocode: (q: string) => req<GeocodeResult[]>(`/geocode?q=${encodeURIComponent(q)}`),
   reverseGeocode: (lat: number, lng: number) =>
     req<{ region_id: number; name: string; level: string; address_approx: string }>(

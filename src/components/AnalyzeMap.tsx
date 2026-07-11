@@ -10,8 +10,9 @@ import {
   Source,
 } from "react-map-gl/maplibre";
 
-import type { GeoJSONFC, LatLng } from "@/lib/api/types";
+import type { GeoJSONFC, LatLng, RiskChoroplethFC } from "@/lib/api/types";
 import { circlePolygon } from "@/lib/format";
+import { FLOOD_FILL_OPACITY, FLOOD_RAMP_STOPS } from "@/lib/riskRamp";
 import { useAppStore } from "@/lib/store";
 import { AnchorPin } from "./mapPins";
 import MapCanvas from "./MapCanvas";
@@ -22,6 +23,7 @@ interface Props {
   competitors?: { place_id: number; lat: number; lng: number; decay_weight: number; is_chain: boolean; name: string }[];
   anchors?: GeoJSONFC | null;
   outlets?: GeoJSONFC | null;
+  floodRisk?: RiskChoroplethFC | null;
   onMapClick: (lat: number, lng: number) => void;
   onTargetDrag: (lat: number, lng: number) => void;
 }
@@ -38,6 +40,7 @@ export function AnalyzeMap({
   competitors,
   anchors,
   outlets,
+  floodRisk,
   onMapClick,
   onTargetDrag,
 }: Props) {
@@ -71,6 +74,25 @@ export function AnalyzeMap({
         flyToTarget();
       }}
     >
+      {/* flood-risk choropleth (Phase 2) — under rings & markers */}
+      {floodRisk && (
+        <Source id="flood-risk" type="geojson" data={floodRisk}>
+          <Layer
+            id="flood-risk-fill"
+            type="fill"
+            paint={{
+              "fill-color": [
+                "interpolate",
+                ["linear"],
+                ["get", "level"],
+                ...FLOOD_RAMP_STOPS.flat(),
+              ],
+              "fill-opacity": FLOOD_FILL_OPACITY,
+            }}
+          />
+        </Source>
+      )}
+
       {/* radius rings */}
       {target &&
         RINGS.map((ring) => (

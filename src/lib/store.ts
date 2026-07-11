@@ -31,6 +31,10 @@ interface AppState {
   showOutlets: boolean;
   toggleOutlets: () => void;
 
+  /** Phase 2: flood-risk choropleth map layer — off by default. */
+  showFloodRisk: boolean;
+  toggleFloodRisk: () => void;
+
   hoveredCompetitorId: number | null;
   setHoveredCompetitor: (id: number | null) => void;
 
@@ -66,6 +70,9 @@ export const useAppStore = create<AppState>()(
       showOutlets: true,
       toggleOutlets: () => set((s) => ({ showOutlets: !s.showOutlets })),
 
+      showFloodRisk: false,
+      toggleFloodRisk: () => set((s) => ({ showFloodRisk: !s.showFloodRisk })),
+
       hoveredCompetitorId: null,
       setHoveredCompetitor: (id) => set({ hoveredCompetitorId: id }),
 
@@ -81,6 +88,7 @@ export const useAppStore = create<AppState>()(
         sidebarCollapsed: s.sidebarCollapsed,
         compareIds: s.compareIds,
         showOutlets: s.showOutlets,
+        showFloodRisk: s.showFloodRisk,
       }),
     },
   ),
